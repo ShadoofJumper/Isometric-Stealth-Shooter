@@ -21,7 +21,7 @@ public class PlayerFPSController : MonoBehaviour
     {
         Vector3 mousePos = mainCamera.ScreenToWorldPoint( new Vector3( Input.mousePosition.x, Input.mousePosition.y, mainCamera.transform.position.y));
         transform.LookAt(mousePos + Vector3.up * transform.position.y);
-        velocity = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized * moveSpeed;
+        velocity = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized * moveSpeed;
     }
 
     private void FixedUpdate()

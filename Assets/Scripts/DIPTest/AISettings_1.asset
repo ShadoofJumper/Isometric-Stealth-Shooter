@@ -10,10 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b93ba5ec7d9c07346943b1a0c9ae9296, type: 3}
-  m_Name: PlayerSettings
+  m_Name: AISettings_1
   m_EditorClassIdentifier: 
-  speed: 5
-  rotateSpeed: 0
-  isAi: 0
-  pauseDelay: 0
-  path: {fileID: 0}
+  speed: 4
+  isAi: 1
+  pauseDelay: 1
+  pathObject: {fileID: 1870894541085685159, guid: 719b9b7340f904344ab1cf9d7e87cd23,
+    type: 3}
+  rotateSpeed: 100

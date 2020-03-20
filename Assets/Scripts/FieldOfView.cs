@@ -102,14 +102,19 @@ public class FieldOfView : MonoBehaviour
 
         // for all steps
         ViewCastInfo oldViewCast = new ViewCastInfo();
-        for (int i = 0; i < stepCount; i++)
+
+        int testCount = 0;
+        for (int i = 0; i <= stepCount; i++)
         {
+            testCount += 1;
             // get ray !rotate! angle
             // rotate angle + left edge of field + step
             // start from left and go right
             float rayAngle = transform.eulerAngles.y - viewAngle / 2 + angleStep * i;
-
+            
             ViewCastInfo castInfo = ViewCast(rayAngle);
+            //Debug.DrawLine(transform.position, castInfo.point);
+
             if (i > 0)
             {
                 // check if our rays collide different walls
@@ -137,6 +142,7 @@ public class FieldOfView : MonoBehaviour
 
             oldViewCast = castInfo;
         }
+        
 
         //create array of triangls we need to paint
         //cout of vertex
@@ -198,7 +204,6 @@ public class FieldOfView : MonoBehaviour
         Vector3 minPoint = Vector3.zero;
         Vector3 maxPoint = Vector3.zero;
 
-        //paint yellow lines for test
         for (int i = 0; i < obsticalCheckResolution; i++)
         {
             //find middle ray between max and min
@@ -207,10 +212,13 @@ public class FieldOfView : MonoBehaviour
 
             // new cast
             ViewCastInfo newCast = ViewCast(angleBetween);
+            //paint line for test
+            //Debug.DrawLine(transform.position, newCast.point, new Vector4(0, 1, 0, 1));
+
             bool edgeDistanceThreshHolll = Mathf.Abs(minCast.dst - newCast.dst) > edgeDistanceThresh;
             // if new cast hit, then it is new min
             // and if we not have different walls
-            if (newCast.hit == minCast.hit && !edgeDistanceThreshHolll)
+            if (newCast.hit == minCast.hit && !edgeDistanceThreshHolll)// 
             {
                 minAngle = angleBetween;
                 minPoint = newCast.point;

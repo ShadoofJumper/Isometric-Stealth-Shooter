@@ -4,8 +4,8 @@ using UnityEngine;
 
 public interface ICharacterInput
 {
-    float Speed { get; }
-    float Velocity { get; }
+    Vector3 PointToLook { get; }
+    Vector3 Velocity { get; }
 
     void UpdateInput();
 }

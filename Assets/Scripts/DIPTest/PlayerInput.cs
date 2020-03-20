@@ -4,16 +4,18 @@ using UnityEngine;
 
 public class PlayerInput : ICharacterInput
 {
-    private float speed;
-    private float velocity;
+    private Vector3 pointToLook;
+    private Vector3 velocity;
 
-    public float Speed { get { return speed; } }
-    public float Velocity { get { return velocity; } }
+    public Vector3 PointToLook { get { return pointToLook; } }
+    public Vector3 Velocity { get { return velocity; } }
+
+    private Camera mainCamera;
 
     // constuctor for input
     public PlayerInput()
     {
-
+        mainCamera = Camera.main;
     }
 
     private void Awake()
@@ -28,7 +30,9 @@ public class PlayerInput : ICharacterInput
 
     public void UpdateInput()
     {
-        Debug.Log("Try update Player inpur");
+        velocity = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
+        Vector3 mousePos = mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, mainCamera.transform.position.y));
+        pointToLook = mousePos;
     }
 
 }
