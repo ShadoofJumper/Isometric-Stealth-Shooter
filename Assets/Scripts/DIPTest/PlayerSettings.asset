@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: PlayerSettings
   m_EditorClassIdentifier: 
   speed: 5
-  rotateSpeed: 0
+  health: 200
   isAi: 0
   pauseDelay: 0
-  path: {fileID: 0}
+  pathObject: {fileID: 0}
+  rotateSpeed: 0

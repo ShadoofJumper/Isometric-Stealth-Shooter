@@ -11,14 +11,18 @@ public class Weapon : MonoBehaviour
     private int bulletCounter = 0;
 
     // queue for bullet pool
-    private Queue<Bullet> bulletPool = new Queue<Bullet>();
-    //event for bullet destroy
-    private 
+    private Queue<GameObject> bulletPool = new Queue<GameObject>();
+    // game object for groupe bullets
+    private GameObject bulletParent;
+    // dictionary for components of bullets
+    private Dictionary<GameObject, Bullet> bulletDict = new Dictionary<GameObject, Bullet>();
 
     void Start()
     {
         //shootSpotPos = shootSpot.position;
-        Debug.Log("forward: " + transform.forward);
+        // create emptyyobject for future bullets
+        bulletParent = new GameObject();
+        bulletParent.name = "Bullet wepone:" + gameObject.name;
     }
 
     void Update()
@@ -36,18 +40,42 @@ public class Weapon : MonoBehaviour
 
     public virtual void LeftButtonShoot()
     {
-        Debug.Log("LeftButtonShoot");
-        //create bullet object
-        GameObject bulletObject = Instantiate(bulletOrigin, shootSpot.position, Quaternion.identity);
-        // program add script to bullet, in future script can be change depend on bullet type
-        Bullet bullet = bulletObject.AddComponent<Bullet>();
-        bullet.SpeedMove = settings.Speed;
-        bullet.Velocity = transform.forward;
-        bullet.OnDestroyBullet = OnBulletDestroy;
-        bullet.name = "Bullet_"+ bulletCounter;
-        // add bullet to pool
-        bulletPool.Enqueue(bullet);
-        bulletCounter++;
+        GameObject bulletObject;
+        // if not have bullet in pull then take from pool
+        if (bulletPool.Count != 0)
+        {
+            // take from start of pool
+            bulletObject    = bulletPool.Dequeue();
+            //get bullet
+            Bullet bullet   = bulletDict[bulletObject];
+            //set start position and speed
+            bulletObject.SetActive(true);
+            bulletObject.transform.position = shootSpot.position;
+            bullet.SpeedMove = settings.Speed;
+            bullet.Velocity = transform.forward;
+            bullet.StartBulletMove();
+        }
+        else
+        {
+            bulletObject        = Instantiate(bulletOrigin, shootSpot.position, Quaternion.identity);
+            // set parent for groupe
+            bulletObject.transform.SetParent(bulletParent.transform);
+            // program add script to bullet, in future script can be change depend on bullet type
+            Bullet bullet       = bulletObject.AddComponent<Bullet>();
+            // add to dict
+            bulletDict.Add(bulletObject, bullet);
+
+            bullet.SpeedMove    = settings.Speed;
+            bullet.Velocity     = transform.forward;
+            bullet.Damage       = settings.Damage;
+            // add delegate to bullet action
+            bullet.OnDestroyBullet = OnBulletDestroy;
+            bullet.name         = "Bullet_" + bulletCounter;
+            bullet.StartBulletMove();
+            // add bullet to end of pool
+            bulletCounter++;
+        }
+
     }
 
     public virtual void RightButtonShoot()
@@ -56,11 +84,18 @@ public class Weapon : MonoBehaviour
     }
 
     //call when bullet destroy
-    private void OnBulletDestroy(Bullet destroyBullet)
+    private void OnBulletDestroy(GameObject destroyBulletObject)
     {
         // remove from queue
-        bulletPool.Enqueue(destroyBullet);
-        Debug.Log("Remove: "+ destroyBullet.name);
+        // get bullet
+        Bullet destroyBullet = bulletDict[destroyBulletObject];
+        // disable bullet
+        destroyBulletObject.SetActive(false);
+        destroyBulletObject.transform.position = Vector3.zero;
+        destroyBullet.SpeedMove = 0;
+        // add to pool when complete
+        bulletPool.Enqueue(destroyBulletObject);
     }
+
 
 }

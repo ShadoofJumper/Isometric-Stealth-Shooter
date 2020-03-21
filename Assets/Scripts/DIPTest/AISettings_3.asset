@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: AISettings_3
   m_EditorClassIdentifier: 
   speed: 5
+  health: 100
   isAi: 1
   pauseDelay: 1
   pathObject: {fileID: 5397245561317769455, guid: a56804150ccd6ef4caf06be02a1c6d96,

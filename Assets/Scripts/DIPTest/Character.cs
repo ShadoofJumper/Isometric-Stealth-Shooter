@@ -8,6 +8,9 @@ public class Character : MonoBehaviour
     [SerializeField] private CharacterSettings settings;
     private ICharacterInput input;
     private CharacterMover characterMover;
+    public bool isAlive = true;
+
+    public CharacterCombat characterCombat;
 
     private void Start()
     {
@@ -15,6 +18,8 @@ public class Character : MonoBehaviour
         input = settings.IsAi ? new AIInput(settings, transform, this) as ICharacterInput : new PlayerInput();
         //create character mover
         characterMover = new CharacterMover(input, transform, settings);
+        //create character combat
+        characterCombat = new CharacterCombat(settings.Health, gameObject);
 
         characterMover.SetStartPosition();
     }
@@ -42,15 +47,23 @@ public class Character : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //move character
-        characterMover.Move();
+        if (isAlive)
+        {
+            //move character
+            characterMover.Move();
+        }
     }
 
     private void Update()
     {
-        input.UpdateInput();
-        // look to target character
-        characterMover.UpdateLook();
+        if (isAlive)
+        {
+            input.UpdateInput();
+            // look to target character
+            characterMover.UpdateLook();
+            // check combat health
+            characterCombat.Tik();
+        }
     }
 
 

@@ -15,3 +15,4 @@ MonoBehaviour:
   bulletSpeed: 20
   shootDelay: 0
   reload: 0
+  damage: 100

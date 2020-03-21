@@ -8,6 +8,7 @@ public class CharacterSettings : ScriptableObject
 {
     // parametrs form characters
     [SerializeField] private float speed;
+    [SerializeField] private float health;
 
     [SerializeField] private bool isAi;
     //for ai settings // need hide in future dynamicly
@@ -17,6 +18,7 @@ public class CharacterSettings : ScriptableObject
 
     // get variables
     public float Speed { get { return speed; } }
+    public float Health { get { return health; } }
 
     public bool IsAi { get { return isAi; } }
     public GameObject Path { get { return pathObject; }}

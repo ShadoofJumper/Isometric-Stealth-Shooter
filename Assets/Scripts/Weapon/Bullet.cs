@@ -6,6 +6,7 @@ using UnityEngine;
 public class Bullet: MonoBehaviour
 {
     private float _speedMove;
+    private float _damage = 0;
     private Vector3 _velocity;
     private Rigidbody _bulletRig;
     private float delayDestroy = 3.0f;
@@ -24,6 +25,12 @@ public class Bullet: MonoBehaviour
         set { _velocity = value; }
     }
 
+    public float Damage
+    {
+        get { return _damage; }
+        set { _damage = value; }
+    }
+
     public float DelayDestroy
     {
         get { return delayDestroy; }
@@ -32,18 +39,23 @@ public class Bullet: MonoBehaviour
 
     #endregion
 
-    // action that call delegate method when we estroy bullet
-    public Action<Bullet> OnDestroyBullet;
+    // action that call delegate method when we destroy bullet
+    public Action<GameObject> OnDestroyBullet;
 
     private void Start()
     {
         _bulletRig = GetComponent<Rigidbody>();
-        StartCoroutine(DestroyBulletAfterTime(delayDestroy));
+        StartBulletMove();
     }
 
     private void FixedUpdate()
     {
         MoveBullet();
+    }
+
+    public void StartBulletMove()
+    {
+        StartCoroutine(DestroyBulletAfterTime(delayDestroy));
     }
 
     
@@ -56,7 +68,11 @@ public class Bullet: MonoBehaviour
     IEnumerator DestroyBulletAfterTime(float delay)
     {
         yield return new WaitForSeconds(delay);
-        BulletDestroy();
+        // after time, if bullet actiove then destroy
+        if (gameObject.activeSelf)
+        {
+            BulletDestroy();
+        }
     }
 
     // move bullet in one fixed frame
@@ -65,20 +81,24 @@ public class Bullet: MonoBehaviour
         _bulletRig.MovePosition(_bulletRig.position + _velocity * _speedMove * Time.fixedDeltaTime);
     }
 
-
-
     public virtual void BulletCollide(Collision collision)
     {
-        Debug.Log("Collision : " + collision.contacts[0].point);
         BulletDestroy();
 
+        // get collide object
+        GameObject objectCollide = collision.collider.gameObject;
+        // get component if exist
+        Character character = objectCollide.GetComponent<Character>();
+        // if collide character then call take damage
+        if (character != null)
+        {
+            character.characterCombat.TakeDamage(_damage);
+        }
     }
 
     public virtual void BulletDestroy()
     {
-        OnDestroyBullet(this);
-        //Destrot bullet
-        Destroy(gameObject);
+        OnDestroyBullet(gameObject);
     }
 
 
