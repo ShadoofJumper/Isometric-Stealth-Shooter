@@ -2,28 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterMover
+public class PlayerMover : ICharacterMover
 {
-    private ICharacterInput _input;
+    private PlayerInput _input;
     private Transform _objectToMove;
     private Rigidbody _objectToMoveRig;
     private CharacterSettings _settings;
 
-    public CharacterMover(ICharacterInput input, Transform objectToMove, CharacterSettings settings)
+    public PlayerMover(ICharacterInput input, Transform objectToMove, CharacterSettings settings)
     {
-        _input = input;
+        _input = input as PlayerInput;
         _objectToMove = objectToMove;
         _settings = settings;
         _objectToMoveRig = objectToMove.GetComponent<Rigidbody>();
     }
 
+    // can be method for spawn place
     public void SetStartPosition()
     {
-        if (_settings.IsAi)
-        {
-            Transform firstPoint = _settings.Path.transform.GetChild(0);
-            _objectToMove.transform.position = firstPoint.position;
-        }
     }
 
     // method for move object one frame
@@ -37,7 +33,7 @@ public class CharacterMover
 
     // method for look in correect direction
     // call in updaye
-    public void UpdateLook()
+    public void UpdateMover()
     {
         //object look to point we get from input, and correct it by object height
         _objectToMove.LookAt(_input.PointToLook + Vector3.up * _objectToMove.position.y);

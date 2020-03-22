@@ -15,7 +15,7 @@ MonoBehaviour:
   speed: 4
   health: 100
   isAi: 1
-  pauseDelay: 1
+  pauseDelay: 3
   pathObject: {fileID: 3091875043506019891, guid: 12bbe091e3c80d74f9950cdcda0385b3,
     type: 3}
   rotateSpeed: 100

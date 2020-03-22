@@ -1,27 +1,37 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Character : MonoBehaviour
 {
 
     [SerializeField] private CharacterSettings settings;
     private ICharacterInput input;
-    private CharacterMover characterMover;
+    private ICharacterMover characterMover;
     public bool isAlive = true;
 
     public CharacterCombat characterCombat;
 
     private void Start()
     {
-        // create input for player or AI
-        input = settings.IsAi ? new AIInput(settings, transform, this) as ICharacterInput : new PlayerInput();
-        //create character mover
-        characterMover = new CharacterMover(input, transform, settings);
+
+        //create input for player or AI nav
+        input = settings.IsAi ? new AIInputNav(settings, transform, this) as ICharacterInput : new PlayerInput();
+
+
+        //create mover
+        characterMover = settings.IsAi ?  new AIMover(input, gameObject, settings) as ICharacterMover: new PlayerMover(input, transform, settings);
+
         //create character combat
-        characterCombat = new CharacterCombat(settings.Health, gameObject);
+        characterCombat = new CharacterCombat(settings.Health, gameObject, this);
 
         characterMover.SetStartPosition();
+    }
+
+    private void CreateNavAgent()
+    {
+        
     }
 
     // paint gizmos if ai
@@ -60,7 +70,7 @@ public class Character : MonoBehaviour
         {
             input.UpdateInput();
             // look to target character
-            characterMover.UpdateLook();
+            characterMover.UpdateMover();
             // check combat health
             characterCombat.Tik();
         }
