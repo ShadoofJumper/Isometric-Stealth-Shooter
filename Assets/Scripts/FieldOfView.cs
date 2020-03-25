@@ -17,6 +17,7 @@ public class FieldOfView : MonoBehaviour
     // mask for obsticals and targets
     public LayerMask obsticalsMask;
     public LayerMask targetsMask;
+    public LayerMask interactMask;
 
     // mesh of field of view visualization
     public MeshFilter fieldMeshFilter;
@@ -25,7 +26,9 @@ public class FieldOfView : MonoBehaviour
     // list of target we can see
     [HideInInspector]
     public List<Transform> targetsInField = new List<Transform>();
+    private List<Collider> objectsInRange = new List<Collider>();
 
+    public List<Collider> ObjectsInRange => objectsInRange;
 
 
     private void Start()
@@ -49,6 +52,24 @@ public class FieldOfView : MonoBehaviour
         {
             yield return new WaitForSeconds(delay);
             FindVisibleTargets();
+            PaintLineToTarget();
+            PaintLineToInteractObjects();
+        }
+    }
+
+    private void PaintLineToTarget()
+    {
+        foreach (Transform targetTransform in targetsInField)
+        {
+            Debug.DrawLine(transform.position, targetTransform.position, Color.red);
+        }
+    }
+
+    private void PaintLineToInteractObjects()
+    {
+        foreach (Collider targetTransform in objectsInRange)
+        {
+            Debug.DrawLine(transform.position, targetTransform.transform.position, Color.yellow);
         }
     }
 
@@ -57,8 +78,12 @@ public class FieldOfView : MonoBehaviour
     public void FindVisibleTargets()
     {
         targetsInField.Clear();
+        objectsInRange.Clear();
         // find all targets in our range using standart method
-        Collider[] alltargets = Physics.OverlapSphere(transform.position, viewRadius, targetsMask);
+        Collider[] alltargets   = Physics.OverlapSphere(transform.position, viewRadius, targetsMask);
+        // find all object we can interacte
+        objectsInRange.AddRange(Physics.OverlapSphere(transform.position, viewRadius, interactMask));
+
         for (int i = 0; i < alltargets.Length; i++)
         {
             Transform target    = alltargets[i].transform;

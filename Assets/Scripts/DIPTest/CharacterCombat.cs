@@ -1,17 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class CharacterCombat
 {
-    private float _health;
-    private int dieImpulsePower = 3;
-    private float dieFallDelay = 2.0f;
-    private Character _character;
-    private GameObject _characterObject;
-    private FieldOfView _characterField;
-    private Rigidbody _characterRigidbody;
-    private MonoBehaviour _myMonoBehaviour;
+    private float           _health;
+    private int             dieImpulsePower = 3;
+    private float           dieFallDelay    = 1.0f;
+    private Character       _character;
+    private NavMeshAgent    _agent;
+    private GameObject      _characterObject;
+    private FieldOfView     _characterField;
+    private Rigidbody       _characterRigidbody;
+    private MonoBehaviour   _myMonoBehaviour;
 
     public CharacterCombat(float health, GameObject character, MonoBehaviour myMonoBehaviour)
     {
@@ -22,6 +24,7 @@ public class CharacterCombat
         _character          = character.GetComponent<Character>();
         _characterField     = character.GetComponent<FieldOfView>();
         _characterRigidbody = character.GetComponent<Rigidbody>();
+        _agent              = character.GetComponent<NavMeshAgent>();
     }
 
     public void TakeDamage(float damage)
@@ -37,16 +40,20 @@ public class CharacterCombat
         {
             Die();
         }
+        
     }
 
     public void Die()
     {
         // set character die
         _character.isAlive = false;
-        //disable visual
+        //disable visual field
         GameObject fieldMesh = _characterObject.transform.GetChild(0).gameObject;
         fieldMesh.SetActive(false);
         _characterField.enabled = false;
+        //disable nav agent
+        _character.DestroyNavMeshAgent();
+        // start fall
         _myMonoBehaviour.StartCoroutine(ShowFallAnim(dieFallDelay));
     }
 
@@ -61,6 +68,5 @@ public class CharacterCombat
         yield return new WaitForSeconds(delayFall);
         // after time turn on kinematick, so character cant move after die
         _characterRigidbody.isKinematic = true;
-
     }
 }

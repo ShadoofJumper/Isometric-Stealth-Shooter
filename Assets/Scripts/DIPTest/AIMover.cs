@@ -9,6 +9,7 @@ public class AIMover : ICharacterMover
     private GameObject _objectToMove;
     private AIInputNav _input;
     private NavMeshAgent agent;
+    private NavMeshPath _path;
 
     public AIMover(ICharacterInput input, GameObject objectToMove, CharacterSettings settings)
     {
@@ -21,33 +22,81 @@ public class AIMover : ICharacterMover
 
     private void CreateNavMeshAgent()
     {
-        agent = _objectToMove.AddComponent<NavMeshAgent>();
+        agent       = _objectToMove.AddComponent<NavMeshAgent>();
         agent.speed = _settings.Speed;
+        //agent.angularSpeed = _settings.RotateSpeed;
         // update nav mesh surface
         GameManager.instance.BakeSurface();
-        Debug.Log("here!");
     }
 
+    // call in fixed delta time
     public void Move()
     {
-        if (!_input.IsOnPause)
+        if (!_input.IsOnPause && !_input.IsOnRotatePause)
         {
+            ResumeMove();
+
             agent.SetDestination(_input.PointToMove);
+            _path = agent.path;
+            //TestPaintPath_path);
         }
+        //if on rotate pause
         else
         {
-            //if character on pause doo some stuff
-            Debug.Log("Do stuff: "+ agent.path.corners[0]);
-            //_objectToMove.transform.eulerAngles = GetAngleToTarget(agent.path.corners[0]);
-            // calculate direction to target
-            Vector3 targetDir = (agent.path.corners[0] - _objectToMove.transform.position).normalized;
-            // calculate angle from direction
-            float targetAngle = 90 - Mathf.Atan2(targetDir.z, targetDir.x) * Mathf.Rad2Deg;
-            // calculate letp
-            Debug.Log("targetAngle: " + targetAngle);
+            if (_input.IsOnRotatePause && !_input.IsOnPause)
+            {
+                //if final point is achieved theen recalculate new path
+                RecalculateNewPathIfNeed();
+                //if character on pause doo some stuff
+                RotateToNextDirection();
+            }
+            else
+            {
+                // pause agent
+                PauseMove();
+            }
+        }
+    }
+
+
+    private void RecalculateNewPathIfNeed()
+    {
+        // compair just x and z
+        Vector3 finalPoint = _path.corners[_path.corners.Length - 1];
+        if (    finalPoint.x    == _objectToMove.transform.position.x 
+            &&  finalPoint.z    == _objectToMove.transform.position.z)
+        {
+            _path = new NavMeshPath();
+            agent.CalculatePath(_input.PointToMove, _path);
+        }
+    }
+
+    private void RotateToNextDirection()
+    {
+        // calculate direction to target
+        Vector3 nextPoint = _path.corners[1];
+        Vector3 targetDir = (nextPoint - _objectToMove.transform.position).normalized;
+        // for test
+        Debug.DrawLine(_objectToMove.transform.position, nextPoint, Color.green);
+        // calculate rotation
+        Quaternion targetRotation = Quaternion.LookRotation(targetDir);
+        // set target rotation in time
+        _objectToMove.transform.rotation = Quaternion.Slerp(_objectToMove.transform.rotation, targetRotation, _settings.RotateSpeed * Time.fixedDeltaTime);
+    }
+
+    private void TestPaintPath(NavMeshPath path)
+    {
+        Debug.DrawLine(_objectToMove.transform.position, path.corners[0], Color.green);
+
+        for (int i = 0; i < path.corners.Length - 1; i++)
+        {
+            Vector3 firstPoint  = path.corners[i];
+            Vector3 nextPoint   = path.corners[i+1];
+            Debug.DrawLine(firstPoint, nextPoint, Color.green);
         }
 
     }
+
 
     private Vector3 GetAngleToTarget(Vector3 targetPoint)
     {
@@ -77,7 +126,34 @@ public class AIMover : ICharacterMover
 
     }
 
+
+    public void PauseMove()
+    {
+        _input.IsOnPause = true;
+        agent.isStopped = true;
+    }
+
+    public void ResumeMove()
+    {
+        _input.IsOnPause = false;
+        if (agent.isStopped == true)
+            agent.isStopped = false;
+    }
+
     public void UpdateMover()
     {
+
+        // for test
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            // set pause while down
+            PauseMove();
+        }
+        if (Input.GetKeyUp(KeyCode.J))
+        {
+            // resume
+            ResumeMove();
+
+        }
     }
 }

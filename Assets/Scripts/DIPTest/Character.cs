@@ -19,7 +19,6 @@ public class Character : MonoBehaviour
         //create input for player or AI nav
         input = settings.IsAi ? new AIInputNav(settings, transform, this) as ICharacterInput : new PlayerInput();
 
-
         //create mover
         characterMover = settings.IsAi ?  new AIMover(input, gameObject, settings) as ICharacterMover: new PlayerMover(input, transform, settings);
 
@@ -29,9 +28,13 @@ public class Character : MonoBehaviour
         characterMover.SetStartPosition();
     }
 
-    private void CreateNavAgent()
+    public void DestroyNavMeshAgent()
     {
-        
+        NavMeshAgent characterAgent = GetComponent<NavMeshAgent>();
+        if (characterAgent != null)
+        {
+            Destroy(characterAgent);
+        }
     }
 
     // paint gizmos if ai

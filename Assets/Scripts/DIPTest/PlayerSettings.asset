@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b93ba5ec7d9c07346943b1a0c9ae9296, type: 3}
   m_Name: PlayerSettings
   m_EditorClassIdentifier: 
-  speed: 5
+  speed: 8
   health: 200
   isAi: 0
   pauseDelay: 0

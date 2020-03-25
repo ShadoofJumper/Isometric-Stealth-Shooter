@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b93ba5ec7d9c07346943b1a0c9ae9296, type: 3}
   m_Name: AISettings_1
   m_EditorClassIdentifier: 
-  speed: 4
+  speed: 2
   health: 100
   isAi: 1
   pauseDelay: 1
   pathObject: {fileID: 1870894541085685159, guid: 719b9b7340f904344ab1cf9d7e87cd23,
     type: 3}
-  rotateSpeed: 100
+  rotateSpeed: 1
