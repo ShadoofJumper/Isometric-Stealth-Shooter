@@ -84,9 +84,44 @@ public class CharacterCombat
 
     }
 
+    public void OnPlayerFound()
+    {
+        Debug.Log("OnPlayerFound");
+        if (MissionManager.instance.IsSilenceRequireMain)
+        {
+            // show some animation about faill
+
+            // show warning about fail
+            GameManager.instance.FailLevel("FAIL MISSION!", "You were caught!");
+        }
+    }
+
+    private bool SearchPlayerInTargets()
+    {
+        // get all current targets
+        List<Transform> targetsInField = _characterField.TargetsInField;
+        // search for player
+        foreach (Transform target in targetsInField)
+        {
+            if (SceneController.instance.charactersOnScene[target].isPlayer)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public void Tik()
     {
+        if (!_character.isPlayer)
+        {
+            if (SearchPlayerInTargets())
+            {
+                OnPlayerFound();
+            }
+        }
+
         if (_health <= 0)
         {
             Die();
@@ -109,7 +144,6 @@ public class CharacterCombat
                     UIController.instance.UpdateAmmoUI(_weapon.CurrentAmmoInStore, _weapon.CurrentAmmoAmmount);
                 }
             }
-
         }
 
     }

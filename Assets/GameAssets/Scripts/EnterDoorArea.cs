@@ -5,12 +5,14 @@ using UnityEngine;
 public class EnterDoorArea : MonoBehaviour
 {
     public int enterId;
+    public float closeTime;
+    public float openTime;
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<Character>())
         {
-            GameManager.instance.DoorwayTriggerEnter(enterId);
+            GameManager.instance.DoorwayTriggerEnter(enterId, openTime);
         }
     }
 
@@ -18,7 +20,7 @@ public class EnterDoorArea : MonoBehaviour
     {
         if (other.GetComponent<Character>())
         {
-            GameManager.instance.DoorwayTriggerExit(enterId);
+            GameManager.instance.DoorwayTriggerExit(enterId, closeTime);
         }
     }
 }

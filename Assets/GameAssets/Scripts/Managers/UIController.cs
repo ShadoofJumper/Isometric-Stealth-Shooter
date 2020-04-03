@@ -42,6 +42,7 @@ public class UIController : MonoBehaviour
     [Tooltip("Панель предупреждения")]
     [SerializeField] private GameObject warningPanel;
     [SerializeField] private TextMeshProUGUI warningText;
+    [SerializeField] private TextMeshProUGUI WarningDescription;
     [SerializeField] private Button warningButton;
 
     private CharacterCombat characterCombat;
@@ -59,7 +60,7 @@ public class UIController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        characterCombat = GameManager.instance.player.characterCombat;
+        characterCombat = SceneController.instance.player.characterCombat;
     }
 
     public void UpdateHealthUI(float health)
@@ -151,10 +152,11 @@ public class UIController : MonoBehaviour
     //------------------------------ Warning panel ------------------------------//
     //    // action for warning button, so can delegate function to it
     //private UnityAction onButtonWarningClick;
-    public void ShowWarning(string message, bool showButton = false, string buttonText = "", UnityAction onWarningButtonClick = null)
+    public void ShowWarning(string message, bool showButton = false, string buttonText = "", UnityAction onWarningButtonClick = null, string messageDescib = "")
     {
         warningPanel.SetActive(true);
         warningText.text = message;
+        WarningDescription.text = messageDescib;
         if (showButton)
         {
             warningButton.gameObject.SetActive(true);

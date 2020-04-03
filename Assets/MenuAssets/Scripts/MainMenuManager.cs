@@ -29,7 +29,10 @@ public class MainMenuManager : MonoBehaviour
     // ------------- main menu
     public void StartGame()
     {
+        // TO DO load last scene, not first
         SceneManager.LoadScene("Game");
+        // resume game if it was on pause
+        GameManager.instance.RestartLevel();
     }
 
     public void TurnSettings()

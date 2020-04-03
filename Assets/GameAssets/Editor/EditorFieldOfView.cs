@@ -25,7 +25,7 @@ public class EditorFieldOfView : Editor
 
         // for all targets paint a red line
         Handles.color = Color.red;
-        foreach (Transform target in fow.targetsInField)
+        foreach (Transform target in fow.TargetsInField)
         {
             Handles.DrawLine(fow.transform.position, target.position);
         }

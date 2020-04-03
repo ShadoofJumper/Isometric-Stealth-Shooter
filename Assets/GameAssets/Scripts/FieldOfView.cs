@@ -27,18 +27,18 @@ public class FieldOfView : MonoBehaviour
 
     // list of target we can see
     [HideInInspector]
-    public List<Transform> targetsInField = new List<Transform>();
+    private List<Transform> targetsInField = new List<Transform>();
     private List<Collider> objectsInRange = new List<Collider>();
 
     public List<Collider> ObjectsInRange => objectsInRange;
-
+    public List<Transform> TargetsInField => targetsInField;
 
     private void Start()
     {
         // create empty mesh
-        fieldMesh = new Mesh();
-        fieldMesh.name = "View field";
-        fieldMeshFilter.mesh = fieldMesh;
+        fieldMesh               = new Mesh();
+        fieldMesh.name          = "View field";
+        fieldMeshFilter.mesh    = fieldMesh;
         StartCoroutine("FindTargetWithDelay", .2f);
     }
 

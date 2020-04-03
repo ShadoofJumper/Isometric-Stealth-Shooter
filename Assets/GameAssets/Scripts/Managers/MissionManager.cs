@@ -32,6 +32,7 @@ public class MissionManager : MonoBehaviour
     private bool isSilenceRequireMain = false;
     public  bool IsSilenceRequireMain { get {return isSilenceRequireMain;} }
 
+
     public void AddMission(string missonKey, Transform marker, bool isSilenceRequireMain = false)
     {
         // update general silence flag
@@ -53,7 +54,7 @@ public class MissionManager : MonoBehaviour
         // remove from UI
         UIController.instance.RemoveMissionFromPanel(missonKey);
         // check complete main mission
-        if (missonKey == "MAIN_MISSION")
+        if (missonKey == "MISSION_MAIN")
         {
             CompleteMainMission();
         }
@@ -61,9 +62,25 @@ public class MissionManager : MonoBehaviour
         isSilenceRequireMain = CheckIsMissionsRequireSilence();
     }
 
+
+    public void ClearAllMission()
+    {
+        // remove all mission
+        foreach (KeyValuePair<string, Mission> missionPair in missionDict)
+        {
+            // remove from UI
+            UIController.instance.RemoveMissionFromPanel(missionPair.Key);
+
+        }
+        missionDict.Clear();
+
+        isSilenceRequireMain = false;
+    }
+
     public void CompleteMainMission()
     {
         isGameComplete = true;
+        GameManager.instance.CompleteLevel();
     }
     // return true if at least one of mission need silence
     private bool CheckIsMissionsRequireSilence()

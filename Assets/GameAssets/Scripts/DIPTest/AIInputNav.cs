@@ -6,14 +6,14 @@ using UnityEngine;
 public class AIInputNav : ICharacterInput
 {
     // parametrs for ai working
-    private Vector3 poinToMove;
-    private int currentPointToMove;
-    private List<Point> _wayPoints;
-    private Transform _path;
-    private CharacterSettings _settings;
-    private Transform _objectToMove;
-    private MonoBehaviour _myMonoBehavior;
-    private FieldOfView _fieldOfView;
+    private Vector3             poinToMove;
+    private int                 currentPointToMove;
+    private List<Point>         _wayPoints;
+    private Transform           _path;
+    private CharacterSettings   _settings;
+    private Transform           _objectToMove;
+    private MonoBehaviour       _myMonoBehavior;
+    private FieldOfView         _fieldOfView;
     // general pause for all stuff
     private bool pause = false;
     // for info that we pause for rotate and can rotate
@@ -107,18 +107,9 @@ public class AIInputNav : ICharacterInput
         }
         // update next point move
         poinToMove = _wayPoints[currentPointToMove].position;
-
-
     }
 
-    private void TestPrint()
-    {
-        Debug.Log($"-------------------- TestPrint ({_wayPoints.Count}) -------------------");
-        foreach (Point point in _wayPoints)
-        {
-            Debug.Log("Point: "+ point.position);
-        }
-    }
+
 
     public bool IsCharacterGetNextPoint()
     {
@@ -152,11 +143,11 @@ public class AIInputNav : ICharacterInput
                 
 
                 //test
-                Vector3 leftDir = DirFromAngle(angleInteract*-1, false).normalized;
-                Vector3 rightDir = DirFromAngle(angleInteract, false).normalized;
+                //Vector3 leftDir = DirFromAngle(angleInteract*-1, false).normalized;
+                //Vector3 rightDir = DirFromAngle(angleInteract, false).normalized;
 
-                Debug.DrawLine(_objectToMove.transform.position, _objectToMove.transform.position + leftDir * 10, Color.red);
-                Debug.DrawLine(_objectToMove.transform.position, _objectToMove.transform.position + rightDir * 10, Color.red);
+                //Debug.DrawLine(_objectToMove.transform.position, _objectToMove.transform.position + leftDir * 10, Color.red);
+                //Debug.DrawLine(_objectToMove.transform.position, _objectToMove.transform.position + rightDir * 10, Color.red);
                 //Debug.Log($"Door angleToDoor{angleToDoor}, angleInteract{angleInteract}, dist {dist}" );
 
                 // check distance and angle look
@@ -194,6 +185,16 @@ public class AIInputNav : ICharacterInput
 
 
     // TEST
+
+    private void TestPrint()
+    {
+        Debug.Log($"-------------------- TestPrint ({_wayPoints.Count}) -------------------");
+        foreach (Point point in _wayPoints)
+        {
+            Debug.Log("Point: " + point.position);
+        }
+    }
+
     public Vector3 DirFromAngle(float angleInDegrees, bool angleIsGlobal)
     {
         if (!angleIsGlobal)

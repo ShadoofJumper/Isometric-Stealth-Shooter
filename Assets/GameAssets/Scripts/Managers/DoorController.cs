@@ -7,8 +7,9 @@ public class DoorController : MonoBehaviour
     private float offsetX = -1;
     private float openX;
     private float closedX;
+    private LTDescr tweenDoorMove;
+    public LTDescr TweenDoorMove { get { return tweenDoorMove; } }
 
-    public float timeOpen = 1;
     public int doorId;
 
     private void Start()
@@ -20,16 +21,20 @@ public class DoorController : MonoBehaviour
         closedX = transform.localPosition.x;
     }
 
-    public void DoorOpen(int doorId)
+    public void DoorOpen(int doorId, float timeOpen)
     {
         if(doorId == this.doorId)
-            LeanTween.moveLocalX(gameObject, openX, timeOpen).setEaseInQuad();
+        {
+            tweenDoorMove = LeanTween.moveLocalX(gameObject, openX, timeOpen).setEaseInQuad();
+        }
     }
 
-    public void CloseDoor(int doorId)
+    public void CloseDoor(int doorId, float timeClose)
     {
         if (doorId == this.doorId)
-            LeanTween.moveLocalX(gameObject, closedX, timeOpen).setEaseInQuad();
+        {
+            tweenDoorMove = LeanTween.moveLocalX(gameObject, closedX, timeClose).setEaseInQuad();
+        }
     }
 
     public bool IsOpened()

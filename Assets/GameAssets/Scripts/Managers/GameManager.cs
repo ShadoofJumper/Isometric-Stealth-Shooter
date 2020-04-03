@@ -25,7 +25,9 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
-    [SerializeField] NavMeshSurface sceneNavMeshSurface;
+    [SerializeField] private NavMeshSurface sceneNavMeshSurface;
+    // settings of current level
+    public LevelSettings levelSetting;
 
     //
     private static bool isGameOnPause = false;
@@ -33,31 +35,58 @@ public class GameManager : MonoBehaviour
     public static bool  IsGameOnPause => isGameOnPause;
 
     // player mission
-    public Character player;
-    [SerializeField] private Transform startPosition;
     [SerializeField] private Transform mainMissionMarker;
 
-
     //here store all method need to call when doorway enter
-    public event Action<int> onDoorwayTriggerEnter;
-    public event Action<int> onDoorwayTriggerExit;
+    public event Action<int, float> onDoorwayTriggerEnter;
+    public event Action<int, float> onDoorwayTriggerExit;
 
     // -------------- Call from other script for open doors than subscribe to action
-    public void DoorwayTriggerEnter(int doorId)
+    public void DoorwayTriggerEnter(int doorId, float time)
     {
         if (onDoorwayTriggerEnter != null)
         {
-            onDoorwayTriggerEnter(doorId);
+            onDoorwayTriggerEnter(doorId, time);
         }
     }
 
-    public void DoorwayTriggerExit(int doorId)
+    public void DoorwayTriggerExit(int doorId, float time)
     {
         if (onDoorwayTriggerExit != null)
         {
-            onDoorwayTriggerExit(doorId);
+            onDoorwayTriggerExit(doorId, time);
         }
     }
+
+    private void CloseAllDoors(float time = 0.0f)
+    {
+        // for all tween has been stored
+        Debug.Log(SceneController.instance.DoorsParent.name);
+        DoorController[] doorControllers = SceneController.instance.DoorsParent.GetComponentsInChildren<DoorController>();
+
+        foreach (DoorController doorController in doorControllers)
+        {
+            LTDescr tweenDoorMove = doorController.TweenDoorMove;
+            if (tweenDoorMove != null)
+            {
+                LeanTween.cancel(tweenDoorMove.id);
+            }
+        }
+
+
+        if (onDoorwayTriggerExit != null)
+        {
+            int doorsCount = onDoorwayTriggerExit.GetInvocationList().Length;
+
+            // TO DO id can be not == count of doors
+            for (int doorId = 1; doorId < doorsCount; doorId++)
+            {
+                onDoorwayTriggerExit(doorId, time);
+            }
+        }
+    }
+
+
     // ---------------------------------------------------------------
 
     public void BakeSurface()
@@ -69,48 +98,78 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        SpawnPlayer();
+        StartLevel(1);
+    }
 
-        // add main mission on start
-        MissionManager.instance.AddMission("MISSION_MAIN", mainMissionMarker);
+    public void StartLevel(int levelId)
+    {
+        SceneController.instance.EnemySettings = levelSetting.EnemySettings;
+        SceneController.instance.StartPositionPlayer = levelSetting.PlayerSpawnPoint;
+
+        SceneController.instance.SpawnPlayer();
+        SceneController.instance.SpawnAllEnemys();
+
+        // add mission on start
+        List<string> missionTasks   = levelSetting.StartMissionsTasks;
+        List<bool> missionIsSilances = levelSetting.StartMissionsIsSilance;
+        for (int i = 0; i < missionTasks.Count; i++)
+        {
+            string  missionName         = missionTasks[i];
+            bool    missionIsSilance    = missionIsSilances[i];
+            MissionManager.instance.AddMission(missionName, mainMissionMarker, missionIsSilance);
+
+        }
 
         //test
         //StartCoroutine(FailOverTime());
     }
 
-    IEnumerator FailOverTime()
+    public void RestartLevel()
     {
-        yield return new WaitForSeconds(0);
-        // test fail level
-        FailLevel();
+        // disable warning
+        isGameOnWarning = false;
+        //resume game time and reset pause
+        ResumeGameLogic();
+        // reload scene
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Game");
     }
 
-    private void SpawnPlayer()
+    public void StartNextLevel()
     {
-        player.characterMover.SetStartPosition(startPosition.position);
+        Debug.Log("Load next scene!");
     }
+
+    IEnumerator FailOverTime()
+    {
+        yield return new WaitForSeconds(2.2f);
+        // test fail level
+        FailLevel("Fail!!!");
+    }
+
 
 
     public void CompleteLevel()
     {
         // show warning that complete level
-        UIController.instance.ShowWarning("Complete level!");
+        UIController.instance.ShowWarning("Complete game!", true, "MENU", UIController.instance.ReturnMenu);
         PauseGameLogic();
         isGameOnWarning = true;
     }
 
-    public void FailLevel()
+    public void FailLevel(string failText, string failDesciption = "")
     {
         // show warning that complete level
-        UIController.instance.ShowWarning("Fail level!", true, "RESTART", RestartLevel);
+        UIController.instance.ShowWarning(failText, true, "RESTART", RestartLevel, failDesciption);
+        // disable characters calculation
+        foreach (KeyValuePair<Transform, Character> characterPair in SceneController.instance.charactersOnScene)
+        {
+            characterPair.Value.enabled = false;
+        }
         PauseGameLogic();
         isGameOnWarning = true;
     }
 
-    public void RestartLevel()
-    {
-        Debug.Log("Restart here!");
-    }
+
 
     public void PauseGameLogic()
     {
@@ -123,22 +182,12 @@ public class GameManager : MonoBehaviour
         if (!isGameOnWarning)
         {
             Time.timeScale = 1.0f;
-            isGameOnPause = true;
+            isGameOnPause = false;
         }
     }
 
 
 
-
-
-    // ----------------------------- Dev -----------------------------
-    // paint gizmos if ai
-    private void OnDrawGizmos()
-    {
-        // paint start point
-        Gizmos.DrawSphere(startPosition.position, 0.6f);
-
-    }
 
 
 }

@@ -131,7 +131,7 @@ public class AIMover : ICharacterMover
     public void SetStartPosition(Vector3 startPos)
     {
         // position
-        _objectToMove.transform.position = startPos;
+        _objectToMove.transform.position = new Vector3(startPos.x, _objectToMove.transform.position.y, startPos.z);
         // rotation
         RotateToNextDirection(0, _input.PointToMove);
     }
