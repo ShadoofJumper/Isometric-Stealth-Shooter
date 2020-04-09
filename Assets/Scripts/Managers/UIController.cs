@@ -44,6 +44,8 @@ public class UIController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI warningText;
     [SerializeField] private TextMeshProUGUI WarningDescription;
     [SerializeField] private Button warningButton;
+    [Tooltip("Скрипт для плавного затухания и перехода между сценами")]
+    [SerializeField] private SceneFader sceneFader;
 
     private CharacterCombat characterCombat;
     private HintType currentHintType;
@@ -139,8 +141,13 @@ public class UIController : MonoBehaviour
 
     public void ReturnMenu()
     {
+        Debug.Log("ReturnMenu");
+        GameManager.IsGameOnWarning = false;
         GameManager.instance.ResumeGameLogic();
-        SceneManager.LoadScene("Menu");
+        //pause all character move
+        GameManager.instance.PauseAllCharactersMove();
+        //PauseGame
+        sceneFader.FadeTo("Menu");
     }
 
     public void ExitGame()

@@ -5,10 +5,12 @@ using UnityEngine;
 public class PitchVolumeField : FieidVisualization
 {
 
-    // mesh of field of character volume pitch
-    [SerializeField] private MeshFilter fieldMeshFilter;
+    // mesh of mask of character volume pitch
+    [SerializeField] private MeshFilter fieldMaskFilter;
+    [SerializeField] private MeshFilter fieldColorFilter;
 
-    private Mesh fieldMesh;
+    private Mesh maskMesh;
+    private Mesh colorMesh;
     private Character _character;
     // paramms for mesh
     private float volumeRange = 0;
@@ -25,6 +27,7 @@ public class PitchVolumeField : FieidVisualization
             { 2.0f, 1.5f, 1.5f},
         };
 
+    private int lastVolumeId;
 
     // start range from this
     private float volumePower = 1;
@@ -52,14 +55,15 @@ public class PitchVolumeField : FieidVisualization
     void Start()
     {
         _character = gameObject.GetComponent<Character>();
-        // create empty mesh
-        fieldMesh               = new Mesh();
-        fieldMesh.name          = "Volume field";
-        fieldMeshFilter.mesh    = fieldMesh;
+        // create empty mesh for mask
+        maskMesh                = new Mesh();
+        maskMesh.name           = "Volume field";
+        fieldMaskFilter.mesh    = maskMesh;
+        // create empty mesh for mask color
+        fieldColorFilter.mesh   = maskMesh;
 
         // save coroutin method
         changeScaleIdle = ChangeScaleIdle();
-        StartCoroutine(changeScaleIdle);
 
         // set start for run
         UpdateVolumeParams(1);
@@ -67,13 +71,27 @@ public class PitchVolumeField : FieidVisualization
 
     private void UpdateVolumeParams(int speedId)
     {
-        volumePower         = volumePramms[speedId, 0];
-        volumeStep          = volumePramms[speedId, 1];
-        volumeChangeSpeed   = volumePramms[speedId, 2];
-        // restart coroutin
-        StopCoroutine(changeScaleIdle);
-        StartCoroutine(changeScaleIdle);
+        if (lastVolumeId != speedId)
+        {
+            volumePower = volumePramms[speedId, 0];
+            volumeStep = volumePramms[speedId, 1];
+            volumeChangeSpeed = volumePramms[speedId, 2];
+            // restart coroutin
+            StopCoroutine(changeScaleIdle);
+            StartCoroutine(changeScaleIdle);
+            lastVolumeId = speedId;
+        }
     }
+
+    private void OnDisable()
+    {
+        if (changeScaleIdle != null)
+        {
+            // stop coroutine
+            StopCoroutine(changeScaleIdle);
+        }
+    }
+
 
     private void LateUpdate()
     {
@@ -90,7 +108,7 @@ public class PitchVolumeField : FieidVisualization
         CallOnPlayerFound(targetsFound);
 
         // draw volume field
-        DrawField(fieldMesh, 0.0f, meshResolution, 360.0f, volume, obsticalCheckResolution, edgeDistanceThresh, obsticalsMask);
+        DrawField(maskMesh, 0.0f, meshResolution, 360.0f, volume, obsticalCheckResolution, edgeDistanceThresh, obsticalsMask);
     }
 
     private void CallOnPlayerFound(List<Transform> targetsFound)
@@ -98,8 +116,12 @@ public class PitchVolumeField : FieidVisualization
         foreach (Transform target in targetsFound)
         {
             // get target character combat
-            CharacterCombat characterCombat = SceneController.instance.charactersOnScene[target].characterCombat;
-            characterCombat.OnPlayerFound();
+            Character character  = SceneController.instance.charactersOnScene[target];
+            if (character.isAlive)
+            {
+                CharacterCombat characterCombat = character.characterCombat;
+                characterCombat.OnPlayerFound("FAIL MISSION!", "Too much noise!");
+            }
         }
     }
 
@@ -115,7 +137,6 @@ public class PitchVolumeField : FieidVisualization
             else if (volumeRange <= startScale)                 { k =  1; }
 
             volumeRange = volumeRange + volumeChangeSpeed * k * Time.deltaTime;
-
             yield return null;
         }
 

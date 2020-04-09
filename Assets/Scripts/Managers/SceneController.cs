@@ -98,7 +98,6 @@ public class SceneController : MonoBehaviour
     private void OnDrawGizmos()
     {
         // paint start point
-        ;
         Gizmos.DrawSphere(startPositionPlayer.position, 0.6f);
 
     }

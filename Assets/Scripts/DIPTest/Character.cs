@@ -12,30 +12,25 @@ public class Character : MonoBehaviour
     public Weapon weapon;
 
     public bool isAlive = false;
+    public bool isOnPause = false;
+
     public bool isPlayer;
 
     public CharacterCombat characterCombat;
+    private Animator characterAnimator;
+
+
     public CharacterSettings Settings => settings;
 
     private void Start()
     {
         // on creating add character component to gloval dictionary
         SceneController.instance.charactersOnScene.Add(transform, this);
-
     }
 
     private void OnDestroy()
     {
-        Debug.Log("OnDestroy character");
-        // removefrom gloval dict after destroy
         SceneController.instance.charactersOnScene.Remove(transform);
-        //if (isPlayer)
-        //{
-        //    Debug.Log("OnDestroy character player");
-        //    // disable other component on destroy
-        //    gameObject.GetComponent<PitchVolumeField>().enabled = false;
-        //}
-
     }
 
     public void InitializeCharacter(CharacterSettings settings)
@@ -52,6 +47,8 @@ public class Character : MonoBehaviour
 
         //create character combat
         characterCombat = new CharacterCombat(input, settings.Health, weapon, gameObject, this);
+
+        characterAnimator = gameObject.GetComponentInChildren<Animator>();
 
         isAlive = true;
     }
@@ -87,9 +84,33 @@ public class Character : MonoBehaviour
 
     }
 
+    public void PauseCharacter()
+    {
+        isOnPause = true;
+        // disable anim
+        if (characterAnimator != null)
+        {
+            characterAnimator.enabled = false;
+        }
+        // TO DO
+        // disable nav mesh
+        //DestroyNavMeshAgent();
+    }
+
+    public void ResumeCharacter()
+    {
+        isOnPause = false;
+        // disable anim
+        if (characterAnimator != null)
+        {
+            characterAnimator.enabled = true;
+        }
+    }
+
+
     private void FixedUpdate()
     {
-        if (isAlive)
+        if (isAlive && !isOnPause)
         {
             //move character
             characterMover.Move();
@@ -100,7 +121,7 @@ public class Character : MonoBehaviour
 
     private void Update()
     {
-        if (isAlive)
+        if (isAlive && !isOnPause)
         {
             input.UpdateInput();
             // look to target character

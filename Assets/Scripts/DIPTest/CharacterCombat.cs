@@ -92,15 +92,15 @@ public class CharacterCombat
 
     }
 
-    public void OnPlayerFound()
+
+    public void OnPlayerFound(string failtext, string failDescription)
     {
-        Debug.Log("OnPlayerFound");
         if (MissionManager.instance.IsSilenceRequireMain)
         {
             // show some animation about faill
 
             // show warning about fail
-            GameManager.instance.FailLevel("FAIL MISSION!", "You were caught!");
+            GameManager.instance.FailLevel(failtext, failDescription);
         }
     }
 
@@ -124,7 +124,7 @@ public class CharacterCombat
         {
             if (SearchPlayerInTargets(_characterField.TargetsInField))
             {
-                OnPlayerFound();
+                OnPlayerFound("FAIL MISSION!", "You were caught!");
             }
         }
 

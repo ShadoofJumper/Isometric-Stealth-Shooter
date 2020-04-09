@@ -75,5 +75,4 @@ public class PlayerMover : ICharacterMover
         _objectToMove.LookAt(_input.PointToLook + Vector3.up * _objectToMove.position.y);
     }
 
-
 }

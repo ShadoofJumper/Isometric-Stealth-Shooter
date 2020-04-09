@@ -26,13 +26,19 @@ public class GameManager : MonoBehaviour
     #endregion
 
     [SerializeField] private NavMeshSurface sceneNavMeshSurface;
+    [SerializeField] private CameraController cameraController;
+    // fader for smooth transition between scenes
+    [SerializeField] private SceneFader sceneFader;
+
     // settings of current level
     public LevelSettings levelSetting;
 
-    //
+    // global game params
     private static bool isGameOnPause = false;
     private static bool isGameOnWarning = false;
-    public static bool  IsGameOnPause => isGameOnPause;
+
+    public static bool  IsGameOnWarning { get { return isGameOnWarning; } set { isGameOnWarning = value; } }
+    public static bool  IsGameOnPause   { get { return isGameOnPause; } }
 
     // player mission
     [SerializeField] private Transform mainMissionMarker;
@@ -120,8 +126,13 @@ public class GameManager : MonoBehaviour
 
         }
 
-        //test
-        //StartCoroutine(FailOverTime());
+        // block player gameplay
+        Character player = SceneController.instance.player;
+        player.PauseCharacter();
+        // For main mission use camera
+        cameraController.ShowPoint(mainMissionMarker, 2.0f, true, 1.0f, 3.0f, delegate { player.ResumeCharacter(); });
+
+
     }
 
     public void RestartLevel()
@@ -131,12 +142,13 @@ public class GameManager : MonoBehaviour
         //resume game time and reset pause
         ResumeGameLogic();
         // reload scene
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Game");
+        sceneFader.FadeTo("Game", 2.0f);
     }
 
     public void StartNextLevel()
     {
         Debug.Log("Load next scene!");
+
     }
 
     IEnumerator FailOverTime()
@@ -145,7 +157,6 @@ public class GameManager : MonoBehaviour
         // test fail level
         FailLevel("Fail!!!");
     }
-
 
 
     public void CompleteLevel()
@@ -163,8 +174,20 @@ public class GameManager : MonoBehaviour
         // disable characters calculation
         foreach (KeyValuePair<Transform, Character> characterPair in SceneController.instance.charactersOnScene)
         {
+            if (characterPair.Value.isPlayer)
+            {
+                PitchVolumeField volumeComp = characterPair.Value.gameObject.GetComponent<PitchVolumeField>();
+                if (volumeComp != null)
+                {
+                    characterPair.Value.gameObject.GetComponent<PitchVolumeField>().enabled = false;
+                }
+                
+            }
             characterPair.Value.enabled = false;
         }
+        // disable player volume
+
+
         PauseGameLogic();
         isGameOnWarning = true;
     }
@@ -173,14 +196,27 @@ public class GameManager : MonoBehaviour
 
     public void PauseGameLogic()
     {
+        Debug.Log("PauseGameLogic");
         Time.timeScale = 0f;
         isGameOnPause = true;
     }
 
+    public void PauseAllCharactersMove()
+    {
+        foreach (KeyValuePair<Transform, Character> characterPair in SceneController.instance.charactersOnScene)
+        {
+            //get character mover
+            Character character = characterPair.Value;
+            character.PauseCharacter();
+        }
+    }
+
     public void ResumeGameLogic()
     {
+        // here we do not need resume game from in game menu, if game on warning
         if (!isGameOnWarning)
         {
+            Debug.Log("ResumeGameLogic");
             Time.timeScale = 1.0f;
             isGameOnPause = false;
         }
