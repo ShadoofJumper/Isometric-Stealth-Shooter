@@ -38,6 +38,8 @@ public class SceneController : MonoBehaviour
     public List<Character> Enemys = new List<Character>();
     // all characters dict, for state all getcomponent info
     public Dictionary<Transform, Character> charactersOnScene = new Dictionary<Transform, Character>();
+    // all cameras dict, for state all getcomponent info
+    public Dictionary<Transform, LevelCamera> camerasOnScene = new Dictionary<Transform, LevelCamera>();
     // doors parent
     [SerializeField] private GameObject doorsParent;
 

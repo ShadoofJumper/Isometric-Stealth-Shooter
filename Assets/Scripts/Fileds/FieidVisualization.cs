@@ -5,12 +5,33 @@ using UnityEngine;
 public class FieidVisualization : MonoBehaviour
 {
 
+    //struct to save info about edges in our field of view
+    public struct MeshInfo
+    {
+        public Mesh fieldMesh;
+        public float fieldObjectsOverlap;
+        float meshResolution;
+        float viewAngle;
+        float viewRadius;
+        float obsticalCheckResolution;
+        float edgeDistanceThresh;
 
+        public MeshInfo(Mesh _fieldMesh, float _fieldObjectsOverlap, float _meshResolution, float _viewAngle, float _viewRadius, float _obsticalCheckResolution, float _edgeDistanceThresh)
+        {
+            fieldMesh           = _fieldMesh;
+            fieldObjectsOverlap = _fieldObjectsOverlap;
+            meshResolution      = _meshResolution;
+            viewAngle           = _viewAngle;
+            viewRadius          = _viewRadius;
+            obsticalCheckResolution = _obsticalCheckResolution;
+            edgeDistanceThresh      = _edgeDistanceThresh;
+        }
+    }
 
     // method for drawing area we can see
-    public void DrawField(Mesh _fieldMesh, float _fieldObjectsOverlap, float _meshResolution, float _viewAngle, float _viewRadius, float _obsticalCheckResolution, float _edgeDistanceThresh, LayerMask _obsticalMask)
+    public void DrawField(Mesh _fieldMesh, Transform parent, float _fieldObjectsOverlap, float _meshResolution, float _viewAngle, float _viewRadius, float _obsticalCheckResolution, float _edgeDistanceThresh, LayerMask _obsticalMask)
     {
-        int stepCount = Mathf.RoundToInt(_viewAngle * _meshResolution);
+        int stepCount   = Mathf.RoundToInt(_viewAngle * _meshResolution);
         float angleStep = _viewAngle / stepCount;
 
         List<Vector3> pointsHit = new List<Vector3>();
@@ -22,10 +43,10 @@ public class FieidVisualization : MonoBehaviour
             // get ray !rotate! angle
             // rotate angle + left edge of field + step
             // start from left and go right
-            float rayAngle = transform.eulerAngles.y - _viewAngle / 2 + angleStep * i;
+            float rayAngle = parent.transform.eulerAngles.y - _viewAngle / 2 + angleStep * i;
 
-            ViewCastInfo castInfo = ViewCast(rayAngle, _viewRadius, _obsticalMask);
-            //Debug.DrawLine(transform.position, castInfo.point);
+            ViewCastInfo castInfo = ViewCast(rayAngle, _viewRadius, _obsticalMask, parent);
+            //Debug.DrawLine(parent.transform.position, castInfo.point);
             if (i > 0)
             {
                 // check if our rays collide different walls
@@ -35,7 +56,7 @@ public class FieidVisualization : MonoBehaviour
                 if (oldViewCast.hit != castInfo.hit || (oldViewCast.hit && oldViewCast.hit && edgeDistanceThreshHolll))
                 {
                     // then when we have this situation, we nead find where is obstical edge
-                    EdgeInfo edge = FindObsticalEdge(oldViewCast, castInfo, _obsticalMask, _viewRadius, _obsticalCheckResolution, _edgeDistanceThresh);
+                    EdgeInfo edge = FindObsticalEdge(oldViewCast, castInfo, _obsticalMask, _viewRadius, _obsticalCheckResolution, _edgeDistanceThresh, parent);
                     // if parametrs not steal zero
                     if (edge.pointA != Vector3.zero)
                     {
@@ -69,7 +90,7 @@ public class FieidVisualization : MonoBehaviour
         for (int i = 0; i < vertexCount - 1; i++)
         {
             //full vertices array with points we have
-            verteces[i + 1] = transform.InverseTransformPoint(pointsHit[i]) + Vector3.forward * _fieldObjectsOverlap;
+            verteces[i + 1] = parent.transform.InverseTransformPoint(pointsHit[i]) + Vector3.forward * _fieldObjectsOverlap;
 
             if (i < vertexCount - 2)
             {
@@ -90,34 +111,34 @@ public class FieidVisualization : MonoBehaviour
     }
 
     // method for get direction from angle
-    public Vector3 DirFromAngle(float angleInDegrees, bool angleIsGlobal)
+    public Vector3 DirFromAngle(float angleInDegrees, bool angleIsGlobal, Transform parent)
     {
         if (!angleIsGlobal)
         {
-            angleInDegrees += transform.eulerAngles.y;
+            angleInDegrees += parent.transform.eulerAngles.y;
         }
         return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
     }
 
     // method for cast ray on angle from player
     // return info about raycast hit
-    public ViewCastInfo ViewCast(float globalAngle, float distance, LayerMask obsticalsMask)
+    public ViewCastInfo ViewCast(float globalAngle, float distance, LayerMask obsticalsMask, Transform parent)
     {
-        Vector3 dir = DirFromAngle(globalAngle, true);
+        Vector3 dir = DirFromAngle(globalAngle, true, parent);
         RaycastHit hit;
 
         // raycust check colision with mask (walls)
-        if (Physics.Raycast(transform.position, dir, out hit, distance, obsticalsMask))
+        if (Physics.Raycast(parent.transform.position, dir, out hit, distance, obsticalsMask))
         {
             return new ViewCastInfo(true, hit.distance, hit.point, globalAngle);
         }
         else
         {
-            return new ViewCastInfo(false, distance, transform.position + dir * distance, globalAngle);
+            return new ViewCastInfo(false, distance, parent.transform.position + dir * distance, globalAngle);
         }
     }
 
-    public EdgeInfo FindObsticalEdge(ViewCastInfo minCast, ViewCastInfo maxCast, LayerMask obsticalsMask, float viewRadius, float obsticalCheckResolution, float edgeDistanceThresh)
+    public EdgeInfo FindObsticalEdge(ViewCastInfo minCast, ViewCastInfo maxCast, LayerMask obsticalsMask, float viewRadius, float obsticalCheckResolution, float edgeDistanceThresh, Transform parent)
     {
         float minAngle = minCast.angle;
         float maxAngle = maxCast.angle;
@@ -131,9 +152,9 @@ public class FieidVisualization : MonoBehaviour
             float angleBetween = (minAngle + maxAngle) / 2;
 
             // new cast
-            ViewCastInfo newCast = ViewCast(angleBetween, viewRadius, obsticalsMask);
+            ViewCastInfo newCast = ViewCast(angleBetween, viewRadius, obsticalsMask, parent);
             //paint line for test
-            //Debug.DrawLine(transform.position, newCast.point, new Vector4(0, 1, 0, 1));
+            //Debug.DrawLine(parent.transform.position, newCast.point, new Vector4(0, 1, 0, 1));
 
             bool edgeDistanceThreshHolll = Mathf.Abs(minCast.dst - newCast.dst) > edgeDistanceThresh;
             // if new cast hit, then it is new min

@@ -35,10 +35,12 @@ public class AIMover : ICharacterMover
     {
         agent       = _objectToMove.AddComponent<NavMeshAgent>();
         // walk speed default
-        agent.speed = _speed.walk;
-        _path = new NavMeshPath();
+        agent.speed         = _speed.walk;
+        agent.baseOffset    = 1.5f;
+        agent.height        = 2.5f;
+        _path               = new NavMeshPath();
         agent.CalculatePath(_input.PointToMove, _path);
-        //agent.angularSpeed = _settings.RotateSpeed;
+
         // update nav mesh surface
         GameManager.instance.BakeSurface();
     }

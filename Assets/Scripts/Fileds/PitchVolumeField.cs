@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PitchVolumeField : FieidVisualization
+public class PitchVolumeField : FieldModVisualization
 {
 
     // mesh of mask of character volume pitch
@@ -103,12 +103,12 @@ public class PitchVolumeField : FieidVisualization
         UpdateVolumeParams(_character.characterMover.SpeedId);
 
         // get all targets that hear volume
-        List<Transform> targetsFound = FindVisibleTargets(volume, targetMask, obsticalsMask);
+        List<Transform> targetsFound = FindVisibleTargets(transform, volume, targetMask, obsticalsMask, true);
         // send call to all players they hear
         CallOnPlayerFound(targetsFound);
 
         // draw volume field
-        DrawField(maskMesh, 0.0f, meshResolution, 360.0f, volume, obsticalCheckResolution, edgeDistanceThresh, obsticalsMask);
+        DrawField(maskMesh, transform, 0.0f, meshResolution, 360.0f, volume, obsticalCheckResolution, edgeDistanceThresh, obsticalsMask);
     }
 
     private void CallOnPlayerFound(List<Transform> targetsFound)
@@ -140,32 +140,6 @@ public class PitchVolumeField : FieidVisualization
             yield return null;
         }
 
-    }
-
-
-    // method for tagets of filed of view
-    public List<Transform> FindVisibleTargets(float viewRadius, LayerMask _targetsMask, LayerMask _obsticalsMask)
-    {
-        List<Transform> targetsInField = new List<Transform>();
-
-        // find all targets in our range using standart method
-        Collider[] alltargets = Physics.OverlapSphere(transform.position, viewRadius, _targetsMask);
-
-        for (int i = 0; i < alltargets.Length; i++)
-        {
-            Transform target = alltargets[i].transform;
-            // get direction to target
-            Vector3 dirTotarget = (target.position - transform.position).normalized;
-
-            float dst = Vector3.Distance(target.position, transform.position);
-            // make raycast to taget, if between not obsticals, then we can see
-            if (!Physics.Raycast(transform.position, dirTotarget, dst, _obsticalsMask))
-            {
-                targetsInField.Add(target);
-            }
-
-        }
-        return targetsInField;
     }
 
 }

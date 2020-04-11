@@ -18,7 +18,6 @@ public class SceneFader : MonoBehaviour
 
     public void FadeTo(string scene, float speed = 1.0f,  UnityAction afterFade = null)
     {
-        Debug.Log("FadeTo: "+ scene);
         StartCoroutine(FadeOut(scene, speed, afterFade));
     }
 
@@ -39,6 +38,7 @@ public class SceneFader : MonoBehaviour
         float t = 0f;
         while (t < 1f)
         {
+
             t += Time.deltaTime * speed;
 
             float a = fadeCurve.Evaluate(t);

@@ -13,7 +13,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI smile;
     [SerializeField] private Slider slider;
     [SerializeField] private SceneFader sceneFader;
-
+    private string sceneOnPlayName = "LevelSelect";
     // Start is called before the first frame update
     void Start()
     {
@@ -30,9 +30,9 @@ public class MainMenuManager : MonoBehaviour
     public void StartGame()
     {
         // TO DO load last scene, not first
-        sceneFader.FadeTo("Game");
+        sceneFader.FadeTo(sceneOnPlayName);
         // resume game if it was on pause
-        GameManager.instance.RestartLevel();
+        //GameManager.instance.RestartLevel();
     }
 
     public void TurnSettings()

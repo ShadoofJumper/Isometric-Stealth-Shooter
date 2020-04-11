@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemySettings:
   - {fileID: 11400000, guid: f6245a0d8c2877b44b429694ecc9d132, type: 2}
-  - {fileID: 11400000, guid: eb7957fe13ca89a46af1053ec3340117, type: 2}
   startMissionsTasks:
   - MISSION_MAIN
   startMissionsIsSilance: 01

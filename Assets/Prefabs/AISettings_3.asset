@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b93ba5ec7d9c07346943b1a0c9ae9296, type: 3}
   m_Name: AISettings_3
   m_EditorClassIdentifier: 
-  speed: {x: 1, y: 4, z: 6}
+  speed: {x: 1, y: 2, z: 6}
   health: 100
   isAi: 1
   pauseDelay: 1

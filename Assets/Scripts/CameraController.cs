@@ -76,7 +76,6 @@ public class CameraController : MonoBehaviour
         // defoult start at target pos
         Vector3 startPoint = transform.position;
         Vector3 finalPoint = new Vector3(lookPoint.position.x, transform.position.y, lookPoint.position.z);
-        Debug.Log("startPoint: " + transform.position);
         isCameraControlled = true;
         yield return new WaitForSeconds(startDelay);
         // move to point

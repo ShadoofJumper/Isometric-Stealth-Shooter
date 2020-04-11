@@ -77,6 +77,7 @@ public class AIInputNav : ICharacterInput
 
     public void UpdateInput()
     {
+
         CheckInteractWithObject();
         // if get to destination and not on rotate pause already
         if (IsCharacterGetNextPoint() && !rotatePause)
@@ -86,7 +87,6 @@ public class AIInputNav : ICharacterInput
             //return 0 if equal lenght in other case just index
             currentPointToMove = (currentPointToMove + 1) % _wayPoints.Count;
             poinToMove = _wayPoints[currentPointToMove].position;
-
             // whene distance completed, then pause true, start coroutin and after progress
             rotatePause = true;
             _myMonoBehavior.StartCoroutine(PauseForRotation(pauseDelay));

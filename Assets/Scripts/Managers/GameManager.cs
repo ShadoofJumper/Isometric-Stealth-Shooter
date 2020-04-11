@@ -128,9 +128,9 @@ public class GameManager : MonoBehaviour
 
         // block player gameplay
         Character player = SceneController.instance.player;
-        player.PauseCharacter();
+        //player.PauseCharacter();
         // For main mission use camera
-        cameraController.ShowPoint(mainMissionMarker, 2.0f, true, 1.0f, 3.0f, delegate { player.ResumeCharacter(); });
+        //cameraController.ShowPoint(mainMissionMarker, 2.0f, true, 1.0f, 3.0f, delegate { player.ResumeCharacter(); });
 
 
     }
@@ -187,6 +187,11 @@ public class GameManager : MonoBehaviour
         }
         // disable player volume
 
+        // disable cameras search
+        foreach (KeyValuePair<Transform, LevelCamera> characterPair in SceneController.instance.camerasOnScene)
+        {
+            characterPair.Value.IsSearchCharacter = false;
+        }
 
         PauseGameLogic();
         isGameOnWarning = true;
@@ -196,7 +201,6 @@ public class GameManager : MonoBehaviour
 
     public void PauseGameLogic()
     {
-        Debug.Log("PauseGameLogic");
         Time.timeScale = 0f;
         isGameOnPause = true;
     }
@@ -216,7 +220,6 @@ public class GameManager : MonoBehaviour
         // here we do not need resume game from in game menu, if game on warning
         if (!isGameOnWarning)
         {
-            Debug.Log("ResumeGameLogic");
             Time.timeScale = 1.0f;
             isGameOnPause = false;
         }
