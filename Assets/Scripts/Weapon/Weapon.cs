@@ -5,18 +5,24 @@ using UnityEngine;
 public class Weapon : MonoBehaviour
 {
     [SerializeField] private WeaponSettings settings;
-    [SerializeField] private GameObject bulletOrigin;
-    [SerializeField] private Transform shootSpot;
-    private Vector3 shootSpotPos;
+    [SerializeField] private GameObject     bulletOrigin;
+    [SerializeField] private Transform      shootSpot;
 
+    [Header("Parameters for laser")]
+    [SerializeField] private float          laserWidth;
+    [SerializeField] private float          laserDistance;
+    // use for mask
+    [SerializeField] private LineRenderer   laserLineMask;
+    [SerializeField] private LayerMask      laserObsticalsMask;
 
-    public bool isStoreEmpty = true;
+    private bool isStoreEmpty = true;
     private int ammoStoreMax;
     private int ammoAmountInStore;
     private int ammoAmount;
 
-    public int CurrentAmmoInStore => ammoAmountInStore;
-    public int CurrentAmmoAmmount => ammoAmount;
+    public bool IsStoreEmpty        => isStoreEmpty;
+    public int CurrentAmmoInStore   => ammoAmountInStore;
+    public int CurrentAmmoAmmount   => ammoAmount;
 
 
     // queue for bullet pool
@@ -38,14 +44,20 @@ public class Weapon : MonoBehaviour
         {
             isStoreEmpty = false;
         }
-
     }
 
     void Start()
     {
         // create emptyyobject for future bullets
-        bulletParent = new GameObject();
-        bulletParent.name = "Bullet wepone:" + gameObject.name;
+        bulletParent        = new GameObject();
+        bulletParent.name   = "Bullet wepone:" + gameObject.name;
+
+        if (laserLineMask!=null)
+        {
+            laserLineMask.useWorldSpace = true;
+            laserLineMask.startWidth    = laserWidth;
+            laserLineMask.endWidth      = laserWidth;
+        }
     }
 
 
@@ -100,6 +112,25 @@ public class Weapon : MonoBehaviour
         }
     }
 
+
+    public void ShootLaser()
+    {
+        Vector3 startPoint = transform.position;
+        Vector3 finisPoint = transform.position + shootSpot.transform.forward * laserDistance;
+        //for mask
+        laserLineMask.SetPosition(0, startPoint);
+        laserLineMask.SetPosition(1, finisPoint);
+
+        // shoot raycast
+        Vector3 dir = (finisPoint - startPoint).normalized;
+        RaycastHit hit;
+
+        if (Physics.Raycast(transform.position, dir, out hit, laserDistance, laserObsticalsMask))
+        {
+            laserLineMask.SetPosition(1, hit.point);
+        }
+    }
+
     private void Shoot()
     {
         GameObject bulletObject;
@@ -113,13 +144,15 @@ public class Weapon : MonoBehaviour
             //set start position and speed
             bulletObject.SetActive(true);
             bulletObject.transform.position = shootSpot.position;
-            bullet.SpeedMove = settings.Speed;
-            bullet.Velocity = transform.forward;
+            bullet.SpeedMove    = settings.Speed;
+            bullet.Velocity     = transform.forward;
             bullet.StartBulletMove();
         }
         else
         {
             bulletObject = Instantiate(bulletOrigin, shootSpot.position, Quaternion.identity);
+            //disable renderer of bullet if laser on
+            //bulletObject.GetComponent<MeshRenderer>().enabled = false;
             // set parent for groupe
             bulletObject.transform.SetParent(bulletParent.transform);
             // program add script to bullet, in future script can be change depend on bullet type
@@ -127,21 +160,39 @@ public class Weapon : MonoBehaviour
             // add to dict
             bulletDict.Add(bulletObject, bullet);
 
-            bullet.SpeedMove = settings.Speed;
-            bullet.Velocity = transform.forward;
-            bullet.Damage = settings.Damage;
+            bullet.SpeedMove    = settings.Speed;
+            bullet.Velocity     = transform.forward;
+            bullet.Damage       = settings.Damage;
             // add delegate to bullet action
-            bullet.OnDestroyBullet = OnBulletDestroy;
-            bullet.name = "Bullet_" + bulletPoolCounter;
+            bullet.OnDestroyBullet  = OnBulletDestroy;
+            bullet.name             = "Bullet_" + bulletPoolCounter;
             bullet.StartBulletMove();
             // add bullet to end of pool
             bulletPoolCounter++;
         }
     }
 
-    public virtual void RightButtonShoot()
+    public virtual void RightButtonDown()
     {
-        Debug.Log("RightButtonShoot");
+        Debug.Log("RightButtonDown");
+        // turn on laser
+        laserLineMask.enabled = true;
+        ShootLaser();
+    }
+
+
+    public virtual void RightButtonHold()
+    {
+        Debug.Log("RightButtonHold");
+        // turn on laser
+        ShootLaser();
+    }
+
+    public virtual void RightButtonUp()
+    {
+        Debug.Log("RightButtonUp");
+        // turn on laser
+        laserLineMask.enabled = false;
     }
 
     //call when bullet destroy

@@ -58,14 +58,15 @@ public class CharacterCombat
         }
     }
 
-    public void DoDamage(int mouseButtonId)
+    // TO Do correct bad code call input shoot
+    public void DoWaeponAction(MouseInput[] mouseButtonsState)
     {
-
         if (_weapon != null)
         {
-            if (mouseButtonId == 0)
+            // if click left button
+            if (mouseButtonsState[0].down)
             {
-                 bool isShootSucces =_weapon.LeftButtonShoot();
+                bool isShootSucces =_weapon.LeftButtonShoot();
                 // play anim trigger
                 if (isShootSucces)
                 {
@@ -77,15 +78,23 @@ public class CharacterCombat
                     UIController.instance.UpdateAmmoUI(_weapon.CurrentAmmoInStore, _weapon.CurrentAmmoAmmount);
                 }
                 // show hint if have ammo and not reload
-                if (_weapon.isStoreEmpty && _weapon.CurrentAmmoAmmount > 0)
+                if (_weapon.IsStoreEmpty && _weapon.CurrentAmmoAmmount > 0)
                 {
                     UIController.instance.ShowAmmoHint();
                 }
 
             }
-            else if (mouseButtonId == 1)
+            else if (mouseButtonsState[1].down)
             {
-                _weapon.RightButtonShoot();
+                _weapon.RightButtonDown();
+            }
+            else if (mouseButtonsState[1].press)
+            {
+                _weapon.RightButtonHold();
+            }
+            else if (mouseButtonsState[1].up)
+            {
+                _weapon.RightButtonUp();
             }
         }
 
@@ -135,10 +144,8 @@ public class CharacterCombat
 
         if (_weapon != null)
         {
-            if (_input.IsShoot)
-            {
-                DoDamage(0);
-            }
+            // call action left
+            DoWaeponAction(_input.MouseInput);
 
             if (_input.IsPressReload)
             {

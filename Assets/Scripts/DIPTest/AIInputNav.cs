@@ -26,8 +26,8 @@ public class AIInputNav : ICharacterInput
     // info about object can interact
     private InteractInfo interactInfo;
     //for shoot mechanic
-    private bool isShoot = false;
-    private bool isPressReload = false;
+    private MouseInput[] mouseInput = new MouseInput[] { new MouseInput(), new MouseInput() };
+    private bool isPressReload  = false;
     // for calculate currecnt speed of character
     private Vector3 previosPos;
     //properties
@@ -35,7 +35,7 @@ public class AIInputNav : ICharacterInput
     public bool IsOnRotatePause { get { return rotatePause; }   set { rotatePause = value; } }
     public InteractInfo InteractObejctInfo  => interactInfo;
     public Vector3 PointToMove              => poinToMove;
-    public bool IsShoot                     => isShoot;
+    public MouseInput[] MouseInput { get { return mouseInput; } }
     public bool IsPressReload               => isPressReload;
 
     public AIInputNav(CharacterSettings settings, Transform objectToMove, MonoBehaviour myMonoBehavior)

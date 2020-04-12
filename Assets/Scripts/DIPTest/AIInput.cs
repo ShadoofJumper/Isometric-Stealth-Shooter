@@ -13,7 +13,7 @@ public class AIInput : ICharacterInput
     private Transform _objectToMove;
     private MonoBehaviour _myMonoBehaviour;
 
-    private bool isShoot;
+    private MouseInput[] mouseInput = new MouseInput[] { new MouseInput(), new MouseInput() };
     private Vector3 pointToLook;
     private Vector3 velocity;
     private Vector3 notRawVelocity;
@@ -23,7 +23,7 @@ public class AIInput : ICharacterInput
     public Vector3 Velocity { get { return velocity; } }
     public Vector3 NotRawVelocity { get { return notRawVelocity; } }
 
-    public bool IsShoot => isShoot;
+    public MouseInput[] MouseInput => mouseInput;
     public bool IsPressReload => isPressReload;
 
     // constuctor for input

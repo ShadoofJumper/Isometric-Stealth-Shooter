@@ -8,14 +8,14 @@ public class PlayerInput : ICharacterInput
     private Vector3 pointToLook;
     private Vector3 velocity;
     private Vector3 notRawVelocity;
-    private bool isShoot = false;
+    private MouseInput[] mouseInput = new MouseInput[] {new MouseInput(), new MouseInput()};
     private bool isPressReload = false;
 
     public Vector3 PointToLook  { get { return pointToLook; } }
     public Vector3 Velocity     { get { return velocity; } }
     public Vector3 NotRawVelocity { get { return notRawVelocity; } }
 
-    public bool IsShoot { get { return isShoot; } }
+    public MouseInput[] MouseInput { get { return mouseInput; } }
 
     public bool IsPressReload => isPressReload;
 
@@ -25,6 +25,11 @@ public class PlayerInput : ICharacterInput
     public PlayerInput()
     {
         mainCamera = Camera.main;
+    }
+
+    private void UpdateMouseInput(int mouseId)
+    {
+        mouseInput[mouseId] = new MouseInput(Input.GetMouseButtonDown(mouseId), Input.GetMouseButton(mouseId), Input.GetMouseButtonUp(mouseId));
     }
 
     public void UpdateInput()
@@ -42,11 +47,10 @@ public class PlayerInput : ICharacterInput
         if (EventSystem.current.IsPointerOverGameObject())
             return;
 
-        isShoot = false;
-        if (Input.GetMouseButtonDown(0))
-        {
-            isShoot = true;
-        }
+        // set left button
+        UpdateMouseInput(0);
+        // set right button
+        UpdateMouseInput(1);
 
         // TO DO change to press in time
         isPressReload = false;
@@ -54,6 +58,23 @@ public class PlayerInput : ICharacterInput
         {
             isPressReload = true;
         }
+    }
+
+
+}
+
+//struct to save info about edges in our field of view
+public struct MouseInput
+{
+    public bool down;
+    public bool press;
+    public bool up;
+
+    public MouseInput(bool _down, bool _press, bool _up)
+    {
+        down = _down;
+        press = _press;
+        up = _up;
     }
 
 }

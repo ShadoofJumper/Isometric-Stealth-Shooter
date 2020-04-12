@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b574d924d6199a94bb4fb6ff947c47a5, type: 3}
   m_Name: Weapon parametrs
   m_EditorClassIdentifier: 
-  bulletSpeed: 20
+  bulletSpeed: 40
   shootDelay: 0
   reload: 0
   damage: 100

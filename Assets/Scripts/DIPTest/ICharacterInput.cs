@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface ICharacterInput
 {
-    bool IsShoot { get; }
+    MouseInput[] MouseInput { get; }
     bool IsPressReload { get; }
 
     void UpdateInput();

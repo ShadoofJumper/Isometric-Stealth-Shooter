@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class Bullet: MonoBehaviour
 {
-    private float _speedMove;
-    private float _damage = 0;
-    private Vector3 _velocity;
-    private Rigidbody _bulletRig;
-    private float delayDestroy = 3.0f;
+    private float       _speedMove;
+    private float       _damage = 0;
+    private Vector3     _velocity;
+    private Rigidbody   _bulletRig;
+    private float       delayDestroy = 3.0f;
 
     #region [Properties]
 

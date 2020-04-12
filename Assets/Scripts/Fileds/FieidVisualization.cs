@@ -5,29 +5,6 @@ using UnityEngine;
 public class FieidVisualization : MonoBehaviour
 {
 
-    //struct to save info about edges in our field of view
-    public struct MeshInfo
-    {
-        public Mesh fieldMesh;
-        public float fieldObjectsOverlap;
-        float meshResolution;
-        float viewAngle;
-        float viewRadius;
-        float obsticalCheckResolution;
-        float edgeDistanceThresh;
-
-        public MeshInfo(Mesh _fieldMesh, float _fieldObjectsOverlap, float _meshResolution, float _viewAngle, float _viewRadius, float _obsticalCheckResolution, float _edgeDistanceThresh)
-        {
-            fieldMesh           = _fieldMesh;
-            fieldObjectsOverlap = _fieldObjectsOverlap;
-            meshResolution      = _meshResolution;
-            viewAngle           = _viewAngle;
-            viewRadius          = _viewRadius;
-            obsticalCheckResolution = _obsticalCheckResolution;
-            edgeDistanceThresh      = _edgeDistanceThresh;
-        }
-    }
-
     // method for drawing area we can see
     public void DrawField(Mesh _fieldMesh, Transform parent, float _fieldObjectsOverlap, float _meshResolution, float _viewAngle, float _viewRadius, float _obsticalCheckResolution, float _edgeDistanceThresh, LayerMask _obsticalMask)
     {
