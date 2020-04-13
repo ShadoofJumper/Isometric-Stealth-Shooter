@@ -61,10 +61,23 @@ public class PlayerMover : ICharacterMover
 
     public void UpdateMoveAnim()
     {
+        // direction to move
+        Vector3 pos = new Vector3(
+            _input.NotRawVelocity.x * currentSpeed / _speed.run,
+            0,
+            _input.NotRawVelocity.z * currentSpeed / _speed.run
+            );
+        // local direction
+        Vector3 localPos = _objectToMove.InverseTransformDirection(pos);
+
         // devide currnt speed to max speed
-        float objectSpeed = (_input.NotRawVelocity * currentSpeed / _speed.run).magnitude;
+        float objectSpeed = pos.magnitude;
+
         // update animation
         _characterAnimator.SetFloat("Speed", objectSpeed);
+        _characterAnimator.SetFloat("PosX", localPos.x);
+        _characterAnimator.SetFloat("PosY", localPos.z);
+
     }
 
     // method for look in correect direction

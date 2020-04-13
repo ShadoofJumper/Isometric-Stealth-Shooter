@@ -16,6 +16,9 @@ public class FieldOfView : FieldModVisualization
     // for file of view mesh can leat bit overlap objects
     public float fieldObjectsOverlap = 0.15f;
 
+    // hot spot of filed of view
+    public Transform hotSpot;
+
     // mask for obsticals and targets
     public LayerMask obsticalsMask;
     public LayerMask targetsMask;

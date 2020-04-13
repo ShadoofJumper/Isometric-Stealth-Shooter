@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
         
     }
     #endregion
-
+    [SerializeField] private Texture2D cursorAim;
     [SerializeField] private NavMeshSurface sceneNavMeshSurface;
     [SerializeField] private CameraController cameraController;
     // fader for smooth transition between scenes
@@ -105,6 +105,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         StartLevel(1);
+        //Cursor.SetCursor(cursorAim, Vector2.zero, CursorMode.Auto);
     }
 
     public void StartLevel(int levelId)

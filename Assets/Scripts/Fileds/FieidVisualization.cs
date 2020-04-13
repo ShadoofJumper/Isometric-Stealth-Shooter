@@ -23,7 +23,7 @@ public class FieidVisualization : MonoBehaviour
             float rayAngle = parent.transform.eulerAngles.y - _viewAngle / 2 + angleStep * i;
 
             ViewCastInfo castInfo = ViewCast(rayAngle, _viewRadius, _obsticalMask, parent);
-            //Debug.DrawLine(parent.transform.position, castInfo.point);
+            Debug.DrawLine(parent.transform.position, castInfo.point);
             if (i > 0)
             {
                 // check if our rays collide different walls
@@ -88,7 +88,7 @@ public class FieidVisualization : MonoBehaviour
     }
 
     // method for get direction from angle
-    public Vector3 DirFromAngle(float angleInDegrees, bool angleIsGlobal, Transform parent)
+    public static Vector3 DirFromAngle(float angleInDegrees, bool angleIsGlobal, Transform parent)
     {
         if (!angleIsGlobal)
         {

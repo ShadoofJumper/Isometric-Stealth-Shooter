@@ -16,8 +16,8 @@ public class EditorFieldOfView : Editor
         Handles.DrawWireArc(fow.transform.position, Vector3.up, fow.transform.forward, 360, fow.viewRadius);
 
         // get angle for lines of field view 
-        Vector3 viewAngleA = fow.DirFromAngle(-fow.viewAngle/2, false, fow.transform);
-        Vector3 viewAngleB = fow.DirFromAngle(fow.viewAngle/2, false, fow.transform);
+        Vector3 viewAngleA = FieidVisualization.DirFromAngle(-fow.viewAngle/2, false, fow.transform);
+        Vector3 viewAngleB = FieidVisualization.DirFromAngle(fow.viewAngle/2, false, fow.transform);
 
         // paint tow lines
         Handles.DrawLine(fow.transform.position, fow.transform.position + viewAngleA * fow.viewRadius);

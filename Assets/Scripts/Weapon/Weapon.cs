@@ -174,7 +174,6 @@ public class Weapon : MonoBehaviour
 
     public virtual void RightButtonDown()
     {
-        Debug.Log("RightButtonDown");
         // turn on laser
         laserLineMask.enabled = true;
         ShootLaser();
@@ -183,14 +182,12 @@ public class Weapon : MonoBehaviour
 
     public virtual void RightButtonHold()
     {
-        Debug.Log("RightButtonHold");
         // turn on laser
         ShootLaser();
     }
 
     public virtual void RightButtonUp()
     {
-        Debug.Log("RightButtonUp");
         // turn on laser
         laserLineMask.enabled = false;
     }

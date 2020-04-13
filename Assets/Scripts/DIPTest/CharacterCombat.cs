@@ -43,6 +43,7 @@ public class CharacterCombat
                 UIController.instance.UpdateAmmoUI(_weapon.CurrentAmmoInStore, _weapon.CurrentAmmoAmmount);
             }
         }
+
     }
 
     public void TakeDamage(float damage)
@@ -67,11 +68,7 @@ public class CharacterCombat
             if (mouseButtonsState[0].down)
             {
                 bool isShootSucces =_weapon.LeftButtonShoot();
-                // play anim trigger
-                if (isShootSucces)
-                {
-                    _characterAnimator.SetTrigger("isShootTrigger");
-                }
+
                 // update after shoot
                 if (_character.isPlayer)
                 {
@@ -86,6 +83,7 @@ public class CharacterCombat
             }
             else if (mouseButtonsState[1].down)
             {
+                TurnAIMMode(true);
                 _weapon.RightButtonDown();
             }
             else if (mouseButtonsState[1].press)
@@ -94,11 +92,28 @@ public class CharacterCombat
             }
             else if (mouseButtonsState[1].up)
             {
+                TurnAIMMode(false);
                 _weapon.RightButtonUp();
             }
         }
 
 
+    }
+
+    private void TurnAIMMode(bool isOn)
+    {
+        if (isOn)
+        {
+            // set anim
+            _characterAnimator.SetBool("isShootBool", true);
+            _characterAnimator.SetLayerWeight(2, 1.0f);
+        }
+        else
+        {
+            // set anim
+            _characterAnimator.SetBool("isShootBool", false);
+            _characterAnimator.SetLayerWeight(2, 0.0f);
+        }
     }
 
 

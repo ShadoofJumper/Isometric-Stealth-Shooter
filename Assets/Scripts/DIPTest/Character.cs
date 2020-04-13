@@ -119,6 +119,7 @@ public class Character : MonoBehaviour
         }
     }
 
+
     private void Update()
     {
         if (isAlive && !isOnPause)
