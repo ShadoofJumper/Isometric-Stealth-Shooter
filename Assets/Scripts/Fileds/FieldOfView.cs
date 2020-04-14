@@ -4,29 +4,6 @@ using UnityEngine;
 
 public class FieldOfView : FieldModVisualization
 {
-    public float viewRadius;
-    [Range(0, 360)]
-    public float viewAngle;
-    // ray cout resolution
-    public float meshResolution;
-    // resolution of how many time check edge of obstical, for smooth look
-    public int obsticalCheckResolution;
-    // for check different walls whene search for edge
-    public float edgeDistanceThresh;
-    // for file of view mesh can leat bit overlap objects
-    public float fieldObjectsOverlap = 0.15f;
-
-    // hot spot of filed of view
-    public Transform hotSpot;
-
-    // mask for obsticals and targets
-    public LayerMask obsticalsMask;
-    public LayerMask targetsMask;
-    public LayerMask interactMask;
-
-    // mesh of field of view visualization
-    public MeshFilter fieldMeshFilter;
-    private Mesh fieldMesh;
 
     // list of target we can see
     [HideInInspector]
@@ -35,6 +12,10 @@ public class FieldOfView : FieldModVisualization
 
     public List<Collider> ObjectsInRange => objectsInRange;
     public List<Transform> TargetsInField => targetsInField;
+
+    // hot spot of filed of view
+    [Header("Hotspot of field")]
+    public Transform hotSpot;
 
     private void Start()
     {
@@ -47,8 +28,8 @@ public class FieldOfView : FieldModVisualization
 
     private void LateUpdate()
     {
-        // send all info, mb need send struct of all need params
-        DrawField(fieldMesh, transform, fieldObjectsOverlap, meshResolution, viewAngle, viewRadius, obsticalCheckResolution, edgeDistanceThresh, obsticalsMask);
+        // draw field, set parent of field
+        DrawField(hotSpot != null ? hotSpot : transform);
     }
 
     //corutin for delay search of targets
@@ -58,7 +39,7 @@ public class FieldOfView : FieldModVisualization
         {
             yield return new WaitForSeconds(delay);
             targetsInField = FindVisibleTargets(transform, viewRadius, targetsMask, obsticalsMask, false, viewAngle);
-            objectsInRange = FindTargets(transform.position, viewRadius, interactMask);
+            objectsInRange = Helpers.FindTargets(transform.position, viewRadius, interactMask);
             PaintLineToTarget(transform, targetsInField);
             PaintLineToInteractObjects(transform, objectsInRange);
         }

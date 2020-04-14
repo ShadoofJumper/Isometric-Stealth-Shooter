@@ -4,20 +4,17 @@ using UnityEngine;
 
 public class PitchVolumeField : FieldModVisualization
 {
-
+    [Header("Mesh for display volume")]
     // mesh of mask of character volume pitch
-    [SerializeField] private MeshFilter fieldMaskFilter;
     [SerializeField] private MeshFilter fieldColorFilter;
 
-    private Mesh maskMesh;
     private Mesh colorMesh;
     private Character _character;
     // paramms for mesh
     private float volumeRange = 0;
-
-    // volume params
-    // power, step, speed
-    public float[,] volumePramms = new float[3,3]
+    // volume params [power, step, speed]
+    [Header("Parameters of moving speed")]
+    public float[,] volumePramms = new float[3, 3]
         {
             //volumePrammsSteals
             { 0.8f, 0.2f, 0.2f},
@@ -27,55 +24,49 @@ public class PitchVolumeField : FieldModVisualization
             { 2.0f, 1.5f, 1.5f},
         };
 
+    // flag for check is colume changed
     private int lastVolumeId;
-
     // start range from this
     private float volumePower = 1;
     // step to chandge
     private float volumeStep = 0.5f;
     // step to chandge
     private float volumeChangeSpeed = 0.5f;
-    //
-    private float volumeSpeedK;
     // variable to save coroutin object
     private IEnumerator changeScaleIdle;
-
-    // for check different walls whene search for edge
-    public float edgeDistanceThresh;
-    // resolution of how many time check edge of obstical, for smooth look
-    public int obsticalCheckResolution;
-
-
-    [SerializeField] private float meshResolution;
-    // mask for obsticals and targets
-    public LayerMask obsticalsMask;
-    public LayerMask targetMask;
 
     // Start is called before the first frame update
     void Start()
     {
         _character = gameObject.GetComponent<Character>();
         // create empty mesh for mask
-        maskMesh                = new Mesh();
-        maskMesh.name           = "Volume field";
-        fieldMaskFilter.mesh    = maskMesh;
+        fieldMesh = new Mesh();
+        fieldMesh.name           = "Volume field";
+        fieldMeshFilter.mesh    = fieldMesh;
         // create empty mesh for mask color
-        fieldColorFilter.mesh   = maskMesh;
+        fieldColorFilter.mesh   = fieldMesh;
 
         // save coroutin method
         changeScaleIdle = ChangeScaleIdle();
 
         // set start for run
         UpdateVolumeParams(1);
+
+        // for security
+        if (fieldObjectsOverlap > 0)
+        {
+            fieldObjectsOverlap = 0;
+            Debug.Log("For circle must be 0, or can lug!");
+        }
     }
 
     private void UpdateVolumeParams(int speedId)
     {
         if (lastVolumeId != speedId)
         {
-            volumePower = volumePramms[speedId, 0];
-            volumeStep = volumePramms[speedId, 1];
-            volumeChangeSpeed = volumePramms[speedId, 2];
+            volumePower         = volumePramms[speedId, 0];
+            volumeStep          = volumePramms[speedId, 1];
+            volumeChangeSpeed   = volumePramms[speedId, 2];
             // restart coroutin
             StopCoroutine(changeScaleIdle);
             StartCoroutine(changeScaleIdle);
@@ -97,18 +88,22 @@ public class PitchVolumeField : FieldModVisualization
     {
         // dependence of volume on speed
         // speed devide on medium speed and discard one
-        volumeSpeedK    = (_character.characterMover.CurrentSpeed / _character.Settings.Speed[1]);//_character.characterMover.CurrentSpeed;
         float volume    = volumeRange + volumePower;
 
         UpdateVolumeParams(_character.characterMover.SpeedId);
 
         // get all targets that hear volume
-        List<Transform> targetsFound = FindVisibleTargets(transform, volume, targetMask, obsticalsMask, true);
+        List<Transform> targetsFound = FindVisibleTargets(transform, volume, targetsMask, obsticalsMask, true);
         // send call to all players they hear
         CallOnPlayerFound(targetsFound);
 
+        // change viewRadius
+        viewRadius = volume;
+
+        //        DrawField(maskMesh, transform, 0.0f, meshResolution, 360.0f, volume, obsticalCheckResolution, edgeDistanceThresh, obsticalsMask);
+
         // draw volume field
-        DrawField(maskMesh, transform, 0.0f, meshResolution, 360.0f, volume, obsticalCheckResolution, edgeDistanceThresh, obsticalsMask);
+        DrawField(transform);
     }
 
     private void CallOnPlayerFound(List<Transform> targetsFound)
@@ -124,7 +119,6 @@ public class PitchVolumeField : FieldModVisualization
             }
         }
     }
-
 
     IEnumerator ChangeScaleIdle()
     {

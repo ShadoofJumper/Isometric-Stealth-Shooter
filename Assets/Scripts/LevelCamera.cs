@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class LevelCamera : FieldModVisualization
 {
+    [Header("Pivots for camera")]
     [SerializeField] private Transform cameraPivot;
     [SerializeField] private Transform fieldPivot;
 
-
+    [Header("Camere settings")]
     // for rotation
     [Range(0, 360)]
     [SerializeField] private float diapasonAngle;
@@ -16,6 +17,8 @@ public class LevelCamera : FieldModVisualization
     [SerializeField] private float seeAngle;
     [SerializeField] private float diapasonRadius;
     [SerializeField] private float speed;
+
+    [Header("Use quarternion for rotate")]
     [SerializeField] private bool isQuarternion = true;
     // for change rotation in opossir direction
     private float k = 1f;
@@ -27,22 +30,6 @@ public class LevelCamera : FieldModVisualization
     // start camera global rotate
     private float globalRotate;
 
-    // ---------------- For field of view ----------------
-    // ray cout resolution
-    public float meshResolution = 0.5f;
-    // resolution of how many time check edge of obstical, for smooth look
-    public int obsticalCheckResolution = 4;
-    // for check different walls whene search for edge
-    public float edgeDistanceThresh = 0.5f;
-    // for file of view mesh can leat bit overlap objects
-    public float fieldObjectsOverlap = 0.15f;
-
-    // mask for obsticals and targets
-    public LayerMask obsticalsMask;
-    public LayerMask targetsMask;
-    // mesh of field of view visualization
-    public MeshFilter fieldMeshFilter;
-    private Mesh fieldMesh;
 
     [HideInInspector]
     private List<Transform> targetsInField = new List<Transform>();
@@ -81,7 +68,7 @@ public class LevelCamera : FieldModVisualization
 
     private void LateUpdate()
     {
-        DrawField(fieldMesh, fieldPivot, fieldObjectsOverlap, meshResolution, seeAngle, diapasonRadius, obsticalCheckResolution, edgeDistanceThresh, obsticalsMask);
+        DrawField(fieldPivot);
     }
 
 

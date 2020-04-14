@@ -16,7 +16,7 @@ ModelImporter:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
     resampleCurves: 1
-    optimizeGameObjects: 0
+    optimizeGameObjects: 1
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -26,7 +26,7 @@ ModelImporter:
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 3
+    animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -73,8 +73,8 @@ ModelImporter:
     sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
-    importCameras: 1
-    importLights: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
@@ -426,13 +426,13 @@ ModelImporter:
         length: 0
         modified: 0
     skeleton:
-    - name: RunUpLeft(Clone)
+    - name: RunLeft(Clone)
       parentName: 
       position: {x: 0, y: 0, z: 0}
       rotation: {x: 0, y: 0, z: 0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: mixamorig:Hips
-      parentName: RunUpLeft(Clone)
+      parentName: RunLeft(Clone)
       position: {x: -0.7509663, y: 86.91007, z: 0.5429998}
       rotation: {x: -0.061916847, y: -0.07748881, z: 0.04189089, w: 0.9941866}
       scale: {x: 1, y: 1, z: 1}

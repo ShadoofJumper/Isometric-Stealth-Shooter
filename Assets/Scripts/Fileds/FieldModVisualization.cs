@@ -5,14 +5,6 @@ using UnityEngine;
 // Same as FieidVisualization but with additional functionality
 public class FieldModVisualization : FieidVisualization
 {
-    public List<Collider> FindTargets(Vector3 position, float viewRadius, LayerMask targetMask)
-    {
-        List<Collider> objectsInRange = new List<Collider>();
-        // find all object we can interacte
-        objectsInRange.AddRange(Physics.OverlapSphere(position, viewRadius, targetMask));
-        return objectsInRange;
-    }
-
     // method for tagets of filed of view
     public List<Transform> FindVisibleTargets(Transform center, float viewRadius, LayerMask targetsMask, LayerMask obsticalsMask, bool fullCircle, float viewAngle = 0)
     {

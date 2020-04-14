@@ -128,8 +128,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewRadius: 15
-  viewAngle: 55
-  meshResolution: 0.5
+  viewAngle: 91
+  meshResolution: 1
   obsticalCheckResolution: 4
   edgeDistanceThresh: 0.5
   fieldObjectsOverlap: 0.15

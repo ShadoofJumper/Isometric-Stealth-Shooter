@@ -122,7 +122,7 @@ public class AIInput : ICharacterInput
         {
             // we get angle we nead to achieve, then direction and in end we have point we will look
             float angle = Mathf.MoveTowardsAngle(_objectToMove.eulerAngles.y, targetAngle, _rotateSpeed * Time.deltaTime);
-            Vector3 dir = DirFromAngle(angle).normalized;
+            Vector3 dir = Helpers.DirFromAngle(angle, false, _objectToMove.transform).normalized;
             Vector3 point = _objectToMove.transform.position + dir;
             pointToLook = new Vector3(point.x, 0, point.z);
 
@@ -133,11 +133,6 @@ public class AIInput : ICharacterInput
     }
 
 
-    // method for get direction from angle
-    public Vector3 DirFromAngle(float angleInDegrees)
-    {
-        return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
-    }
 
     public void UpdateInput()
     {

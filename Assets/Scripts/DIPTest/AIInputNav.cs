@@ -141,11 +141,11 @@ public class AIInputNav : ICharacterInput
                 
                 ////angle to door
                 float angleToDoor = Vector3.Angle(_objectToMove.forward, dirToDoor);
-                
+
 
                 //test
-                //Vector3 leftDir = DirFromAngle(angleInteract*-1, false).normalized;
-                //Vector3 rightDir = DirFromAngle(angleInteract, false).normalized;
+                //Vector3 leftDir = Helpers.DirFromAngle(angleInteract*-1, false,_objectToMove.transform).normalized;
+                //Vector3 rightDir = Helpers.DirFromAngle(angleInteract, false, _objectToMove.transform).normalized;
 
                 //Debug.DrawLine(_objectToMove.transform.position, _objectToMove.transform.position + leftDir * 10, Color.red);
                 //Debug.DrawLine(_objectToMove.transform.position, _objectToMove.transform.position + rightDir * 10, Color.red);
@@ -196,14 +196,6 @@ public class AIInputNav : ICharacterInput
         }
     }
 
-    public Vector3 DirFromAngle(float angleInDegrees, bool angleIsGlobal)
-    {
-        if (!angleIsGlobal)
-        {
-            angleInDegrees += _objectToMove.transform.eulerAngles.y;
-        }
-        return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
-    }
 
     //struct to save info about interact
     public struct InteractInfo
