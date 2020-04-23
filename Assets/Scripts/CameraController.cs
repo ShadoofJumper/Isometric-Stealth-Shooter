@@ -6,10 +6,14 @@ using UnityEngine.Events;
 public class CameraController : MonoBehaviour
 {
     [SerializeField] private Transform target;
-    [SerializeField] private float moveSmoothens = 0.125f;
-    [SerializeField] private float moveLookSpeed = 1.0f;
-    [SerializeField] private float moveLookSpeedBuff = 10.0f;
-    [SerializeField] private float rangeLook = 1.0f;
+    [SerializeField] private Transform cameraMoveParent;
+    [SerializeField] private Transform cameraRotateParent;
+    [SerializeField] private float moveSmoothens = 5.0f;
+    //[SerializeField] private float moveLookSpeed = 5.0f;
+    //[SerializeField] private float moveLookSpeedBuff = 10.0f;
+    [SerializeField] private float rotateSmoothens  = 5.0f;
+    [SerializeField] private float rangeLook        = 1.0f;
+    private Vector3 startOffsetCamera;
     // flag for translate camera
     private bool isCameraControlled = false;
     // TEST
@@ -18,16 +22,27 @@ public class CameraController : MonoBehaviour
 
     // flag for switch global and local look of player
     private bool isGlobalLook = false;
+    // for get player look pint
+    private PlayerInput playerInput;
 
     private void Awake()
     {
         // seet start camera position near player
         Vector3 playerPos = SceneController.instance.StartPositionPlayer.position;
-        transform.position = new Vector3(playerPos.x, transform.position.y, playerPos.z);
+
+        Vector3 cameraOffset = new Vector3();
+        cameraOffset.x = cameraMoveParent.position.y / (2 * Mathf.Sin(Mathf.Deg2Rad * 45)) - 0.7f;
+        cameraOffset.z = cameraMoveParent.position.y / (2 * Mathf.Sin(Mathf.Deg2Rad * 45)) * -1 + 0.7f;
+        startOffsetCamera = cameraOffset;
+        //set start camera position
+        cameraMoveParent.position = new Vector3(startOffsetCamera.x, cameraMoveParent.position.y, startOffsetCamera.z);
+
+
     }
 
     void Start()
     {
+        playerInput = SceneController.instance.player.CharacterInput as PlayerInput;
 
     }
 
@@ -36,55 +51,65 @@ public class CameraController : MonoBehaviour
         // return if player on pause
         if (SceneController.instance.player.isOnPause || isCameraControlled)
             return;
-
-        // set position
-        transform.position = CalculateCameraPos();
         ////check is gloval look
         isGlobalLook = Input.GetKey(KeyCode.Space);
+
+        // set camera position
+        MoveCamera();
+        // set camera rotaton around target
+        //RotateCamera();
     }
 
-    private Vector3 CalculateCameraPos()
+    private void MoveCamera()
     {
-        // speed for camera move to mouse
-        float speedCameraMoveToMouse = !isGlobalLook ? moveLookSpeed : moveLookSpeed + moveLookSpeedBuff;// 
-        // calculate mouse direction from target to mouse
-        Vector3 mouseLookDirect     = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - target.position).normalized;
-        Vector3 cameraMouseOffset   = new Vector3(mouseLookDirect.x, 0, mouseLookDirect.z);
+        // look direction
+        Vector3 targetLookDirection = (playerInput.PointToLook - target.position);
+        Vector3 pointLookFix = playerInput.PointToLook;
+        pointLookFix.y = 0.5f;
+        //Debug.DrawLine(target.position, pointLookFix, Color.red);
+        Vector3 cameraMouseOffset = Vector3.zero;
 
-        if (!isGlobalLook)
+        //if global look
+        if (isGlobalLook)
         {
-            // set mouse move in range
-            cameraMouseOffset.x = Mathf.Clamp(cameraMouseOffset.x, rangeLook * -1, rangeLook);
-            cameraMouseOffset.z = Mathf.Clamp(cameraMouseOffset.z, rangeLook * -1, rangeLook);
+            cameraMouseOffset = new Vector3(
+                Mathf.Clamp(targetLookDirection.x, rangeLook * -1, rangeLook),
+                0,
+                Mathf.Clamp(targetLookDirection.z, rangeLook * -1, rangeLook)
+                );
         }
- 
 
-        // move camera to player position + mouse offset
-        Vector3 destPosition = new Vector3(target.position.x, transform.position.y, target.position.z) + cameraMouseOffset * speedCameraMoveToMouse;
-        Vector3 newCameraPos = Vector3.Lerp(transform.position, destPosition, moveSmoothens * Time.fixedDeltaTime);
+        //// move camera to player position + mouse offset for global look
+        Vector3 destPosition = new Vector3(
+            target.position.x,
+            cameraMoveParent.position.y,
+            target.position.z) + cameraMouseOffset + startOffsetCamera;
 
-        return newCameraPos;
+        //Debug.Log($"Offset to: {startOffsetCamera}");
+        Vector3 newCameraPos = Vector3.Lerp(cameraMoveParent.position, destPosition, moveSmoothens * Time.fixedDeltaTime);
+
+        cameraMoveParent.position = newCameraPos;
     }
 
-    public void ShowPoint(Transform lookPoint, float time, bool withSlowDown = false, float startDelay = 0, float delay = 0, UnityAction delayFunk = null)
+    public void ShowPoint(Transform lookPoint, float time, bool withSlowDown = false, float startDelay = 0, float delayInPlace = 0, UnityAction delayFunk = null)
     {
-        StartCoroutine(MoveToPointAndBack(lookPoint, time, withSlowDown, startDelay, delay, delayFunk));
+        StartCoroutine(MoveToPointAndBack(lookPoint, time, withSlowDown, startDelay, delayInPlace, delayFunk));
     }
 
-    IEnumerator MoveToPointAndBack(Transform lookPoint, float time, bool withSlowDown, float startDelay, float delay, UnityAction delayFunk)
+    IEnumerator MoveToPointAndBack(Transform lookPoint, float time, bool withSlowDown, float startDelay, float delayInPlace, UnityAction delayFunk)
     {
         // defoult start at target pos
-        Vector3 startPoint = transform.position;
-        Vector3 finalPoint = new Vector3(lookPoint.position.x, transform.position.y, lookPoint.position.z);
+        Vector3 startPoint = cameraMoveParent.position;
+        Vector3 finalPoint = new Vector3(lookPoint.position.x, cameraMoveParent.position.y, lookPoint.position.z);
         isCameraControlled = true;
         yield return new WaitForSeconds(startDelay);
         // move to point
-        yield return MoveToPoint(transform.position, finalPoint, time, withSlowDown);
-        yield return new WaitForSeconds(delay);
+        yield return MoveToPoint(cameraMoveParent.position, finalPoint, time, withSlowDown);
+        yield return new WaitForSeconds(delayInPlace);
         // do stuff
         if (delayFunk!=null) { delayFunk.Invoke(); };
         //move back
-        yield return MoveToPoint(transform.position, startPoint, time, withSlowDown);
+        yield return MoveToPoint(cameraMoveParent.position, startPoint, time, withSlowDown);
         isCameraControlled = false;
     }
 
@@ -99,7 +124,7 @@ public class CameraController : MonoBehaviour
         {
             i += Time.deltaTime * step;
             float moveStep = withSlowDown ? iCurve = curveWithFade.Evaluate(i) : i;
-            transform.position = Vector3.Lerp(a, b, moveStep);
+            cameraMoveParent.position = Vector3.Lerp(a, b, moveStep);
             yield return null;
         }
        

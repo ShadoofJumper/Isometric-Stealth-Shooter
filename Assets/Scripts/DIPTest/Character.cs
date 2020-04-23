@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+[RequireComponent(typeof(Rigidbody))]
 public class Character : MonoBehaviour
 {
 
@@ -19,7 +20,7 @@ public class Character : MonoBehaviour
     public CharacterCombat characterCombat;
     private Animator characterAnimator;
 
-
+    public ICharacterInput CharacterInput => input;
     public CharacterSettings Settings => settings;
 
     private void Start()

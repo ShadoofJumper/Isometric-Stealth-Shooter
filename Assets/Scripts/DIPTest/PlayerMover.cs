@@ -53,20 +53,18 @@ public class PlayerMover : ICharacterMover
             currentSpeed = _speed.walk;
             speedId = 1;
         }
+
+        // normilize velocity
+        Vector3 moveSpeed = _input.Velocity.normalized * currentSpeed;
         // move object rigidbody on velocity from input
         // multyple on speed from setting
-        _objectToMoveRig.MovePosition(_objectToMoveRig.position + _input.Velocity * currentSpeed * Time.fixedDeltaTime);
+        _objectToMoveRig.MovePosition(_objectToMoveRig.position + moveSpeed * Time.fixedDeltaTime);
 
     }
 
     public void UpdateMoveAnim()
     {
-        // direction to move
-        Vector3 pos = new Vector3(
-            _input.NotRawVelocity.x * currentSpeed / _speed.run,
-            0,
-            _input.NotRawVelocity.z * currentSpeed / _speed.run
-            );
+        Vector3 pos = Vector3.ClampMagnitude(_input.NotRawVelocity, 1) * currentSpeed / _speed.run;
         // local direction
         Vector3 localPos = _objectToMove.InverseTransformDirection(pos);
 
@@ -84,8 +82,11 @@ public class PlayerMover : ICharacterMover
     // call in updaye
     public void UpdateMover()
     {
-        //object look to point we get from input, and correct it by object height
-        _objectToMove.LookAt(_input.PointToLook + Vector3.up * _objectToMove.position.y);
+        //get point to look and calculate object rotation
+        Vector3 lookDir = _input.PointToLook - _objectToMove.transform.position;
+        lookDir.y = 0;
+        Quaternion newRotateion = Quaternion.LookRotation(lookDir.normalized);
+        _objectToMoveRig.MoveRotation(newRotateion);
     }
 
 }

@@ -10,13 +10,16 @@ public class PlayerInput : ICharacterInput
     private Vector3 notRawVelocity;
     private MouseInput[] mouseInput = new MouseInput[] {new MouseInput(), new MouseInput()};
     private bool isPressReload = false;
+    // for correct isometrical rotation
+    private Vector3 forward;
+    private Vector3 right;
+    private float   velosityIsomFix;
+    private Plane   gamePlane;
 
-    public Vector3 PointToLook  { get { return pointToLook; } }
-    public Vector3 Velocity     { get { return velocity; } }
-    public Vector3 NotRawVelocity { get { return notRawVelocity; } }
-
-    public MouseInput[] MouseInput { get { return mouseInput; } }
-
+    public Vector3 PointToLook      { get { return pointToLook; } }
+    public Vector3 Velocity         { get { return velocity; } }
+    public Vector3 NotRawVelocity   { get { return notRawVelocity; } }
+    public MouseInput[] MouseInput  { get { return mouseInput; } }
     public bool IsPressReload => isPressReload;
 
     private Camera mainCamera;
@@ -25,6 +28,16 @@ public class PlayerInput : ICharacterInput
     public PlayerInput()
     {
         mainCamera = Camera.main;
+
+        forward = Camera.main.transform.forward;
+        forward.y = 0;
+        right = Quaternion.Euler(0, 90, 0) * forward;
+        // for velocity bug fix
+        velosityIsomFix = 2.0f;
+
+        // create plane for raycast ray on it and get player look point
+        // set level of plane on player eye level
+        Plane gamePlane = new Plane(Vector3.up, new Vector3(0, 2.5f, 0));
     }
 
     private void UpdateMouseInput(int mouseId)
@@ -37,11 +50,15 @@ public class PlayerInput : ICharacterInput
         if (GameManager.IsGameOnPause)
             return;
 
-        velocity        = new Vector3(Input.GetAxisRaw("Horizontal"),   0, Input.GetAxisRaw("Vertical")).normalized;
-        notRawVelocity  = new Vector3(Input.GetAxis("Horizontal"),      0, Input.GetAxis("Vertical"));
+        notRawVelocity  = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 
-        Vector3 mousePos = mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, mainCamera.transform.position.y));
-        pointToLook = mousePos;
+        Vector3 verticalMovement    = forward   * Input.GetAxisRaw("Vertical");
+        Vector3 horizontalMovement  = right     * Input.GetAxisRaw("Horizontal");
+
+        velocity = verticalMovement + horizontalMovement;
+        velocity *= velosityIsomFix;
+
+        UpdatePointToLook();
 
         //check if over gui then do not calculate input
         if (EventSystem.current.IsPointerOverGameObject())
@@ -60,6 +77,16 @@ public class PlayerInput : ICharacterInput
         }
     }
 
+    private void UpdatePointToLook()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        // distance from start in ray where ray hit plane
+        float enter = 0.0f;
+        if (gamePlane.Raycast(ray, out enter))
+        {
+            pointToLook = ray.GetPoint(enter);
+        }
+    }
 
 }
 
@@ -72,9 +99,9 @@ public struct MouseInput
 
     public MouseInput(bool _down, bool _press, bool _up)
     {
-        down = _down;
-        press = _press;
-        up = _up;
+        down    = _down;
+        press   = _press;
+        up      = _up;
     }
 
 }
