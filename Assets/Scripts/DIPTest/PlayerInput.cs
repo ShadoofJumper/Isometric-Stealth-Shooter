@@ -37,7 +37,7 @@ public class PlayerInput : ICharacterInput
 
         // create plane for raycast ray on it and get player look point
         // set level of plane on player eye level
-        Plane gamePlane = new Plane(Vector3.up, new Vector3(0, 2.5f, 0));
+        gamePlane = new Plane(Vector3.up, new Vector3(0, 2.5f, 0));
     }
 
     private void UpdateMouseInput(int mouseId)
@@ -50,7 +50,13 @@ public class PlayerInput : ICharacterInput
         if (GameManager.IsGameOnPause)
             return;
 
-        notRawVelocity  = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        // TODO not need to velocity can be one and another normolized
+
+        Vector3 vericalMovementNoRaw    = forward * Input.GetAxis("Vertical");
+        Vector3 horizontalMovementNoRaw = right * Input.GetAxis("Horizontal");
+
+        notRawVelocity = vericalMovementNoRaw + horizontalMovementNoRaw;
+        notRawVelocity *= velosityIsomFix;
 
         Vector3 verticalMovement    = forward   * Input.GetAxisRaw("Vertical");
         Vector3 horizontalMovement  = right     * Input.GetAxisRaw("Horizontal");

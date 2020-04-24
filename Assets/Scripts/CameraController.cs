@@ -57,7 +57,17 @@ public class CameraController : MonoBehaviour
         // set camera position
         MoveCamera();
         // set camera rotaton around target
-        //RotateCamera();
+        RotateCamera();
+    }
+
+    private void RotateCamera()
+    {
+        // rotate pranet
+        Quaternion newRotation = Quaternion.Euler(0, 0, (target.eulerAngles.y + 45) * -1);//
+        Quaternion newCameraAngle = Quaternion.Lerp(cameraRotateParent.localRotation, newRotation, rotateSmoothens * Time.fixedDeltaTime);
+
+        cameraRotateParent.localRotation = newCameraAngle;
+        transform.localRotation = Quaternion.Inverse(newCameraAngle);
     }
 
     private void MoveCamera()
@@ -72,22 +82,21 @@ public class CameraController : MonoBehaviour
         //if global look
         if (isGlobalLook)
         {
-            cameraMouseOffset = new Vector3(
-                Mathf.Clamp(targetLookDirection.x, rangeLook * -1, rangeLook),
-                0,
-                Mathf.Clamp(targetLookDirection.z, rangeLook * -1, rangeLook)
-                );
+            cameraMouseOffset = new Vector3(0, rangeLook, 0);
         }
+
+        // set camera offset
+        transform.localPosition = Vector3.Lerp(transform.localPosition, cameraMouseOffset, moveSmoothens * Time.fixedDeltaTime); ;
+
 
         //// move camera to player position + mouse offset for global look
         Vector3 destPosition = new Vector3(
             target.position.x,
             cameraMoveParent.position.y,
-            target.position.z) + cameraMouseOffset + startOffsetCamera;
+            target.position.z) + startOffsetCamera;
 
         //Debug.Log($"Offset to: {startOffsetCamera}");
         Vector3 newCameraPos = Vector3.Lerp(cameraMoveParent.position, destPosition, moveSmoothens * Time.fixedDeltaTime);
-
         cameraMoveParent.position = newCameraPos;
     }
 

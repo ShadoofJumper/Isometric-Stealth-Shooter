@@ -58,8 +58,8 @@ public class PlayerMover : ICharacterMover
         Vector3 moveSpeed = _input.Velocity.normalized * currentSpeed;
         // move object rigidbody on velocity from input
         // multyple on speed from setting
-        _objectToMoveRig.MovePosition(_objectToMoveRig.position + moveSpeed * Time.fixedDeltaTime);
 
+        _objectToMoveRig.MovePosition(_objectToMoveRig.position + moveSpeed * Time.fixedDeltaTime);
     }
 
     public void UpdateMoveAnim()
@@ -68,9 +68,11 @@ public class PlayerMover : ICharacterMover
         // local direction
         Vector3 localPos = _objectToMove.InverseTransformDirection(pos);
 
+        Debug.Log($"notRawVelocity: {_input.NotRawVelocity}, change: {Vector3.ClampMagnitude(_input.NotRawVelocity, 1)} local {localPos}");//, localPos {}
+
         // devide currnt speed to max speed
         float objectSpeed = pos.magnitude;
-
+        Debug.Log($"mag: {localPos.magnitude}");
         // update animation
         _characterAnimator.SetFloat("Speed", objectSpeed);
         _characterAnimator.SetFloat("PosX", localPos.x);
@@ -85,6 +87,7 @@ public class PlayerMover : ICharacterMover
         //get point to look and calculate object rotation
         Vector3 lookDir = _input.PointToLook - _objectToMove.transform.position;
         lookDir.y = 0;
+        Debug.DrawLine(_objectToMove.transform.position, _input.PointToLook, Color.red);
         Quaternion newRotateion = Quaternion.LookRotation(lookDir.normalized);
         _objectToMoveRig.MoveRotation(newRotateion);
     }

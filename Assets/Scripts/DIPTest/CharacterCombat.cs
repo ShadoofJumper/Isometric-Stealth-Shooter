@@ -105,14 +105,14 @@ public class CharacterCombat
         if (isOn)
         {
             // set anim
-            _characterAnimator.SetBool("isShootBool", true);
-            _characterAnimator.SetLayerWeight(2, 1.0f);
+            //_characterAnimator.SetBool("isShootBool", true);
+            //_characterAnimator.SetLayerWeight(2, 1.0f);
         }
         else
         {
             // set anim
-            _characterAnimator.SetBool("isShootBool", false);
-            _characterAnimator.SetLayerWeight(2, 0.0f);
+            //_characterAnimator.SetBool("isShootBool", false);
+            //_characterAnimator.SetLayerWeight(2, 0.0f);
         }
     }
 
@@ -189,7 +189,7 @@ public class CharacterCombat
         // start fall
         _myMonoBehaviour.StartCoroutine(ShowFallAnim(dieFallDelay));
         // disable anim
-        _characterAnimator.SetFloat("Speed", 0);
+        //_characterAnimator.SetFloat("Speed", 0);
     }
 
     IEnumerator ShowFallAnim(float delayFall)

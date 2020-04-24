@@ -78,7 +78,7 @@ public class AIMover : ICharacterMover
     {
         currentSpeed = agent.velocity.magnitude / _speed.run;
         // update animation
-        _characterAnimator.SetFloat("Speed", currentSpeed);
+        //_characterAnimator.SetFloat("Speed", currentSpeed);
     }
 
     // if achiev final path and we not have path (agent not use setdestination to this moment)

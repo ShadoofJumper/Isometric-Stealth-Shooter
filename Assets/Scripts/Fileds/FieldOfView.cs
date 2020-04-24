@@ -7,11 +7,11 @@ public class FieldOfView : FieldModVisualization
 
     // list of target we can see
     [HideInInspector]
-    private List<Transform> targetsInField = new List<Transform>();
-    private List<Collider> objectsInRange = new List<Collider>();
+    private List<Transform> targetsInField  = new List<Transform>();
+    private List<Collider> objectsInRange   = new List<Collider>();
 
-    public List<Collider> ObjectsInRange => objectsInRange;
-    public List<Transform> TargetsInField => targetsInField;
+    public List<Collider> ObjectsInRange    => objectsInRange;
+    public List<Transform> TargetsInField   => targetsInField;
 
     // hot spot of filed of view
     [Header("Hotspot of field")]
