@@ -94,6 +94,40 @@ public class SceneController : MonoBehaviour
         Enemys.Clear();
     }
 
+    // FOR TEST
+    private bool isSlow = false;
+    private bool isFast = false;
+    private void Update()
+    {
+        // kill all bots
+        if (Input.GetKey(KeyCode.K))
+        {
+            StartCoroutine("DieDelay");
+        }
+
+        if (Input.GetKeyDown(KeyCode.RightShift))
+        {
+            Time.timeScale = !isFast ? 2.0f : 1.0f;
+            isFast = !isFast;
+        }
+        if (Input.GetKeyDown(KeyCode.RightControl))
+        {
+            Time.timeScale = !isSlow ? 0.5f : 1.0f;
+            isSlow = !isSlow;
+        }
+
+    }
+
+    IEnumerator DieDelay()
+    {
+        yield return new WaitForSeconds(1.0f);
+
+        foreach (Character enemy in Enemys)
+        {
+            enemy.characterCombat.Die();
+        }
+    }
+
 
     // ----------------------------- Dev -----------------------------
     // paint gizmos if ai

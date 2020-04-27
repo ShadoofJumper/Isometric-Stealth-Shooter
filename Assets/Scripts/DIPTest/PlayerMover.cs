@@ -7,7 +7,7 @@ public class PlayerMover : ICharacterMover
     private PlayerInput _input;
     private Transform   _objectToMove;
     private Rigidbody   _objectToMoveRig;
-    private Animator    _characterAnimator;
+    private CharacterAnimationController _charAnim;
     private CharacterSettings   _settings;
     private SpeedParams         _speed;
     private int speedId = 1;
@@ -24,7 +24,7 @@ public class PlayerMover : ICharacterMover
         _objectToMove       = objectToMove;
         _settings           = settings;
         _objectToMoveRig    = objectToMove.GetComponent<Rigidbody>();
-        _characterAnimator  = objectToMove.GetComponentInChildren<Animator>();
+        _charAnim           = objectToMove.GetComponentInChildren<CharacterAnimationController>();
         _speed              = new SpeedParams(settings.Speed);
         currentSpeed        = _speed.walk;
     }
@@ -58,26 +58,15 @@ public class PlayerMover : ICharacterMover
         Vector3 moveSpeed = _input.Velocity.normalized * currentSpeed;
         // move object rigidbody on velocity from input
         // multyple on speed from setting
-
         _objectToMoveRig.MovePosition(_objectToMoveRig.position + moveSpeed * Time.fixedDeltaTime);
     }
 
     public void UpdateMoveAnim()
     {
-        Vector3 pos = Vector3.ClampMagnitude(_input.NotRawVelocity, 1) * currentSpeed / _speed.run;
-        // local direction
-        Vector3 localPos = _objectToMove.InverseTransformDirection(pos);
-
-        Debug.Log($"notRawVelocity: {_input.NotRawVelocity}, change: {Vector3.ClampMagnitude(_input.NotRawVelocity, 1)} local {localPos}");//, localPos {}
-
-        // devide currnt speed to max speed
-        float objectSpeed = pos.magnitude;
-        Debug.Log($"mag: {localPos.magnitude}");
-        // update animation
-        _characterAnimator.SetFloat("Speed", objectSpeed);
-        _characterAnimator.SetFloat("PosX", localPos.x);
-        _characterAnimator.SetFloat("PosY", localPos.z);
-
+        Vector3 pos         = Vector3.ClampMagnitude(_input.NotRawVelocity, 1) * (speedId + 1) / 3;
+        Vector3 localPos    = _objectToMove.InverseTransformDirection(pos);
+        float objectSpeed   = pos.magnitude;
+        _charAnim.UpdateMoveAnim(objectSpeed, localPos);
     }
 
     // method for look in correect direction

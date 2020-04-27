@@ -10,10 +10,11 @@ public class AIMover : ICharacterMover
     private AIInputNav _input;
     private NavMeshAgent agent;
     private NavMeshPath _path;
-    private Animator _characterAnimator;
+    private CharacterAnimationController _charAnim;
     // steals, walk and run speed
     private SpeedParams _speed;
     private float currentSpeed;
+    //default walk
     private int speedId = 1;
 
     public float CurrentSpeed { get { return currentSpeed; } set { currentSpeed = value; } }
@@ -24,7 +25,7 @@ public class AIMover : ICharacterMover
         _settings               = settings;
         _objectToMove           = objectToMove;
         _input                  = input as AIInputNav;
-        _characterAnimator      = objectToMove.GetComponentInChildren<Animator>();
+        _charAnim               = objectToMove.GetComponentInChildren<CharacterAnimationController>();
         _speed                  = new SpeedParams(settings.Speed);
         Vector3 startPos        = _settings.Path.transform.GetChild(0).position;
         SetStartPosition(startPos);
@@ -36,7 +37,7 @@ public class AIMover : ICharacterMover
         agent       = _objectToMove.AddComponent<NavMeshAgent>();
         // walk speed default
         agent.speed         = _speed.walk;
-        agent.baseOffset    = 1.5f;
+        agent.baseOffset    = 0.0f;
         agent.height        = 2.5f;
         _path               = new NavMeshPath();
         agent.CalculatePath(_input.PointToMove, _path);
@@ -76,9 +77,10 @@ public class AIMover : ICharacterMover
 
     public void UpdateMoveAnim()
     {
-        currentSpeed = agent.velocity.magnitude / _speed.run;
-        // update animation
-        //_characterAnimator.SetFloat("Speed", currentSpeed);
+        currentSpeed            = agent.velocity.magnitude / _speed.run;
+        Vector3 clearVelocity   = agent.velocity / _settings.Speed[speedId];
+        Vector3 localPos        = _objectToMove.transform.InverseTransformDirection(clearVelocity * (speedId+1) / 3);
+        _charAnim.UpdateMoveAnim(currentSpeed, localPos);
     }
 
     // if achiev final path and we not have path (agent not use setdestination to this moment)
@@ -101,7 +103,6 @@ public class AIMover : ICharacterMover
         Vector3 targetDir = (nextPoint - _objectToMove.transform.position).normalized;
         // for test
         Debug.DrawLine(_objectToMove.transform.position, nextPoint, Color.green);
-        // calculate rotation
         Quaternion targetRotation = Quaternion.LookRotation(targetDir);
         // set target rotation in time
         if (delay > 0)
@@ -141,26 +142,22 @@ public class AIMover : ICharacterMover
         while (Mathf.Abs(deltaBetweenAngles) > 0.05f)//
         {
             // we get angle we nead to achieve, then direction and in end we have point we will look
-            angle = Mathf.MoveTowardsAngle(_objectToMove.transform.eulerAngles.y, targetAngle, _settings.RotateSpeed * Time.deltaTime);
-            
-            deltaBetweenAngles = Mathf.DeltaAngle(_objectToMove.transform.eulerAngles.y, targetAngle);
+            angle               = Mathf.MoveTowardsAngle(_objectToMove.transform.eulerAngles.y, targetAngle, _settings.RotateSpeed * Time.deltaTime);
+            deltaBetweenAngles  = Mathf.DeltaAngle(_objectToMove.transform.eulerAngles.y, targetAngle);
         }
         return new Vector3(0, angle, 0);
     }
 
     public void SetStartPosition(Vector3 startPos)
     {
-        // position
         _objectToMove.transform.position = new Vector3(startPos.x, _objectToMove.transform.position.y, startPos.z);
-
-        // rotation
         RotateToNextDirection(0, _input.PointToMove);
     }
 
     public void PauseMove()
     {
-        _input.IsOnPause = true;
-        agent.isStopped = true;
+        _input.IsOnPause    = true;
+        agent.isStopped     = true;
     }
 
     public void ResumeMove()

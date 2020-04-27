@@ -13,6 +13,7 @@ public class FieldOfView : FieldModVisualization
     public List<Collider> ObjectsInRange    => objectsInRange;
     public List<Transform> TargetsInField   => targetsInField;
 
+
     // hot spot of filed of view
     [Header("Hotspot of field")]
     public Transform hotSpot;
@@ -24,12 +25,20 @@ public class FieldOfView : FieldModVisualization
         fieldMesh.name          = "View field";
         fieldMeshFilter.mesh    = fieldMesh;
         StartCoroutine("FindTargetWithDelay", .2f);
+        if(!GetComponent<Character>().isPlayer)
+            StartCoroutine("FindObjectsWithDelay", .2f);
     }
 
     private void LateUpdate()
     {
         // draw field, set parent of field
         DrawField(hotSpot != null ? hotSpot : transform);
+    }
+
+    private void OnDisable()
+    {
+        StopCoroutine("FindTargetWithDelay");
+        StopCoroutine("FindObjectsWithDelay");
     }
 
     //corutin for delay search of targets
@@ -39,11 +48,18 @@ public class FieldOfView : FieldModVisualization
         {
             yield return new WaitForSeconds(delay);
             targetsInField = FindVisibleTargets(transform, viewRadius, targetsMask, obsticalsMask, false, viewAngle);
-            objectsInRange = Helpers.FindTargets(transform.position, viewRadius, interactMask);
             PaintLineToTarget(transform, targetsInField);
-            PaintLineToInteractObjects(transform, objectsInRange);
         }
     }
 
+    IEnumerator FindObjectsWithDelay(float delay)
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(delay);
+            objectsInRange = Helpers.FindTargets(transform.position, viewRadius, interactMask);
+            PaintLineToInteractObjects(transform, objectsInRange);
+        }
+    }
 
 }

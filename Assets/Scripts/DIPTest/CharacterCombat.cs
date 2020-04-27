@@ -6,7 +6,7 @@ using UnityEngine.AI;
 public class CharacterCombat
 {
     private float           _health;
-    private int             dieImpulsePower = 3;
+    private int             dieImpulsePower = 2;
     private float           dieFallDelay    = 1.0f;
     private Weapon          _weapon;
     private Character       _character;
@@ -14,7 +14,10 @@ public class CharacterCombat
     private GameObject      _characterObject;
     private FieldOfView     _characterField;
     private Rigidbody       _characterRigidbody;
-    private Animator        _characterAnimator;
+    private CharacterAnimationController _charAnim;
+
+    //test
+    private Vector3 lastHit;
 
     private MonoBehaviour   _myMonoBehaviour;
     private ICharacterInput _input;
@@ -31,7 +34,7 @@ public class CharacterCombat
         _characterField     = character.GetComponent<FieldOfView>();
         _characterRigidbody = character.GetComponent<Rigidbody>();
         _agent              = character.GetComponent<NavMeshAgent>();
-        _characterAnimator  = character.GetComponentInChildren<Animator>();
+        _charAnim           = character.GetComponentInChildren<CharacterAnimationController>();
 
         if (_character.isPlayer)
         {
@@ -46,15 +49,16 @@ public class CharacterCombat
 
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, ContactPoint hitPoint = new ContactPoint())
     {
         _health -= damage;
         _health = _health < 0 ? 0 : _health;
+        //test
+        lastHit = hitPoint.point;
 
         if (_character.isPlayer)
         {
             //Debug.Log($"Health: {_health}/{damage}");
-
             UIController.instance.UpdateHealthUI(_health);
         }
     }
@@ -180,28 +184,54 @@ public class CharacterCombat
     {
         // set character die
         _character.isAlive = false;
-        //disable visual field
+        // disable visual field
         GameObject fieldMesh = _characterObject.transform.GetChild(0).gameObject;
         fieldMesh.SetActive(false);
         _characterField.enabled = false;
-        //disable nav agent
+        // disable nav agent
         _character.DestroyNavMeshAgent();
         // start fall
         _myMonoBehaviour.StartCoroutine(ShowFallAnim(dieFallDelay));
-        // disable anim
-        //_characterAnimator.SetFloat("Speed", 0);
     }
+
 
     IEnumerator ShowFallAnim(float delayFall)
     {
         // enable rigidbody gravity
-        _characterRigidbody.useGravity = true;
+        _characterRigidbody.useGravity      = true;
         _characterRigidbody.freezeRotation = false;
+        _character.GetComponent<Collider>().enabled = false;
         // add impulse for fun drop
-        Vector3 impulseVelocity = _character.transform.forward * dieImpulsePower;
-        _characterRigidbody.AddForce(impulseVelocity, ForceMode.Impulse);
+        //Vector3 impulseVelocity = _character.transform.forward * dieImpulsePower;
+        //_characterRigidbody.AddForce(impulseVelocity, ForceMode.Impulse);
+        //yield return 0;
+        _charAnim.EnableRagdoll();
+        Debug.Log($"Contact: {lastHit}");
+        yield return 0;
+        Collider ragdollColHit = _charAnim.CheckWhereHitRagdoll(lastHit);
+        if (ragdollColHit != null)
+            Debug.Log($"Name: {ragdollColHit.name}");
+
+        _charAnim.PauseCharAnim();
         yield return new WaitForSeconds(delayFall);
-        // after time turn on kinematick, so character cant move after die
         _characterRigidbody.isKinematic = true;
     }
+
+    //IEnumerator ShowFallAnim(float delayFall)
+    //{
+    //    // enable rigidbody gravity
+    //    //_characterRigidbody.useGravity      = true;
+    //    _characterRigidbody.freezeRotation  = false;
+    //    _characterRigidbody.velocity        = Vector3.zero;
+    //    _character.GetComponent<Collider>().enabled = false;
+    //    // disable anim and enable ragdoll
+    //    _charAnim.PauseCharAnim();
+    //    //_charAnim.EnableRagdoll();
+    //    // add impulse for fun drop
+    //    //Vector3 impulseVelocity = _character.transform.forward * dieImpulsePower;
+    //    //_characterRigidbody.AddForce(impulseVelocity, ForceMode.Impulse);
+    //    yield return new WaitForSeconds(delayFall);
+    //    // after time turn on kinematick, so character cant move after die
+    //    //_characterRigidbody.isKinematic = true;
+    //}
 }

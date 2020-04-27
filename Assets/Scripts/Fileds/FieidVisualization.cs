@@ -47,7 +47,7 @@ public class FieidVisualization : MonoBehaviour
             float rayAngle = parent.transform.eulerAngles.y - viewAngle / 2 + angleStep * i;
 
             ViewCastInfo castInfo = ViewCast(rayAngle, viewRadius, parent);
-            Debug.DrawLine(parent.transform.position, castInfo.point);
+            //Debug.DrawLine(parent.transform.position, castInfo.point);
             if (i > 0)
             {
                 // check if our rays collide different walls

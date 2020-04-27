@@ -92,7 +92,7 @@ public class Bullet: MonoBehaviour
         // if collide character then call take damage
         if (character != null)
         {
-            character.characterCombat.TakeDamage(_damage);
+            character.characterCombat.TakeDamage(_damage, collision.contacts[0]);
         }
     }
 

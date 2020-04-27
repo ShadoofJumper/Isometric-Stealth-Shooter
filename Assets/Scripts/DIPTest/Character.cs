@@ -12,16 +12,16 @@ public class Character : MonoBehaviour
     public  ICharacterMover characterMover;
     public Weapon weapon;
 
-    public bool isAlive = false;
-    public bool isOnPause = false;
+    public bool isAlive     = false;
+    public bool isOnPause   = false;
 
     public bool isPlayer;
 
     public CharacterCombat characterCombat;
-    private Animator characterAnimator;
+    private CharacterAnimationController charAnim;
 
-    public ICharacterInput CharacterInput => input;
-    public CharacterSettings Settings => settings;
+    public ICharacterInput CharacterInput   => input;
+    public CharacterSettings Settings       => settings;
 
     private void Start()
     {
@@ -36,22 +36,17 @@ public class Character : MonoBehaviour
 
     public void InitializeCharacter(CharacterSettings settings)
     {
-        this.settings = settings;
-
-        isPlayer = !settings.IsAi;
+        this.settings   = settings;
+        isPlayer        = !settings.IsAi;
+        isAlive         = true;
 
         //create input for player or AI nav
-        input = !isPlayer ? new AIInputNav(settings, transform, this) as ICharacterInput : new PlayerInput();
-
+        input               = !isPlayer ? new AIInputNav(settings, transform, this) as ICharacterInput : new PlayerInput();
         //create mover
-        characterMover = !isPlayer ? new AIMover(input, gameObject, settings) as ICharacterMover : new PlayerMover(input, transform, settings);
-
+        characterMover      = !isPlayer ? new AIMover(input, gameObject, settings) as ICharacterMover : new PlayerMover(input, transform, settings);
         //create character combat
-        characterCombat = new CharacterCombat(input, settings.Health, weapon, gameObject, this);
-
-        characterAnimator = gameObject.GetComponentInChildren<Animator>();
-
-        isAlive = true;
+        characterCombat     = new CharacterCombat(input, settings.Health, weapon, gameObject, this);
+        charAnim            = gameObject.GetComponentInChildren<CharacterAnimationController>();
     }
 
 
@@ -88,11 +83,8 @@ public class Character : MonoBehaviour
     public void PauseCharacter()
     {
         isOnPause = true;
-        // disable anim
-        if (characterAnimator != null)
-        {
-            characterAnimator.enabled = false;
-        }
+        if (charAnim != null)
+            charAnim.PauseCharAnim();
         // TO DO
         // disable nav mesh
         //DestroyNavMeshAgent();
@@ -101,11 +93,8 @@ public class Character : MonoBehaviour
     public void ResumeCharacter()
     {
         isOnPause = false;
-        // disable anim
-        if (characterAnimator != null)
-        {
-            characterAnimator.enabled = true;
-        }
+        if (charAnim != null)
+            charAnim.PauseCharAnim();
     }
 
 
@@ -133,7 +122,7 @@ public class Character : MonoBehaviour
         }
 
         // test
-        if (isPlayer && Input.GetKeyDown(KeyCode.K))
+        if (isPlayer && Input.GetKeyDown(KeyCode.D))
         {
             characterCombat.TakeDamage(5);
         }
