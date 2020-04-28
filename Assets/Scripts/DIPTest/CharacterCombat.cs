@@ -16,11 +16,12 @@ public class CharacterCombat
     private Rigidbody       _characterRigidbody;
     private CharacterAnimationController _charAnim;
 
-    //test
-    private Vector3 lastHit;
-
     private MonoBehaviour   _myMonoBehaviour;
     private ICharacterInput _input;
+
+    //test
+    private DamageHit lastHit;
+
 
     public CharacterCombat(ICharacterInput input, float health, Weapon weapon, GameObject character, MonoBehaviour myMonoBehaviour)
     {
@@ -49,12 +50,17 @@ public class CharacterCombat
 
     }
 
-    public void TakeDamage(float damage, ContactPoint hitPoint = new ContactPoint())
+    public void UpdateCharacterStatus(Weapon weapon)
+    {
+        _weapon = weapon;
+    }
+
+    public void TakeDamage(float damage, ContactPoint hitPoint = new ContactPoint(), Vector3 hitDirection = new Vector3())
     {
         _health -= damage;
         _health = _health < 0 ? 0 : _health;
-        //test
-        lastHit = hitPoint.point;
+
+        lastHit = new DamageHit(hitPoint.point, hitDirection);
 
         if (_character.isPlayer)
         {
@@ -87,7 +93,7 @@ public class CharacterCombat
             }
             else if (mouseButtonsState[1].down)
             {
-                TurnAIMMode(true);
+                _charAnim.EnableAim();
                 _weapon.RightButtonDown();
             }
             else if (mouseButtonsState[1].press)
@@ -96,28 +102,12 @@ public class CharacterCombat
             }
             else if (mouseButtonsState[1].up)
             {
-                TurnAIMMode(false);
+                _charAnim.DisableAim();
                 _weapon.RightButtonUp();
             }
         }
 
 
-    }
-
-    private void TurnAIMMode(bool isOn)
-    {
-        if (isOn)
-        {
-            // set anim
-            //_characterAnimator.SetBool("isShootBool", true);
-            //_characterAnimator.SetLayerWeight(2, 1.0f);
-        }
-        else
-        {
-            // set anim
-            //_characterAnimator.SetBool("isShootBool", false);
-            //_characterAnimator.SetLayerWeight(2, 0.0f);
-        }
     }
 
 
@@ -201,37 +191,22 @@ public class CharacterCombat
         _characterRigidbody.useGravity      = true;
         _characterRigidbody.freezeRotation = false;
         _character.GetComponent<Collider>().enabled = false;
-        // add impulse for fun drop
-        //Vector3 impulseVelocity = _character.transform.forward * dieImpulsePower;
-        //_characterRigidbody.AddForce(impulseVelocity, ForceMode.Impulse);
-        //yield return 0;
         _charAnim.EnableRagdoll();
-        Debug.Log($"Contact: {lastHit}");
         yield return 0;
-        Collider ragdollColHit = _charAnim.CheckWhereHitRagdoll(lastHit);
-        if (ragdollColHit != null)
-            Debug.Log($"Name: {ragdollColHit.name}");
-
+        // add impulse for fun drop
+        _charAnim.HitRagdoll(lastHit, dieImpulsePower);
         _charAnim.PauseCharAnim();
-        yield return new WaitForSeconds(delayFall);
-        _characterRigidbody.isKinematic = true;
     }
 
-    //IEnumerator ShowFallAnim(float delayFall)
-    //{
-    //    // enable rigidbody gravity
-    //    //_characterRigidbody.useGravity      = true;
-    //    _characterRigidbody.freezeRotation  = false;
-    //    _characterRigidbody.velocity        = Vector3.zero;
-    //    _character.GetComponent<Collider>().enabled = false;
-    //    // disable anim and enable ragdoll
-    //    _charAnim.PauseCharAnim();
-    //    //_charAnim.EnableRagdoll();
-    //    // add impulse for fun drop
-    //    //Vector3 impulseVelocity = _character.transform.forward * dieImpulsePower;
-    //    //_characterRigidbody.AddForce(impulseVelocity, ForceMode.Impulse);
-    //    yield return new WaitForSeconds(delayFall);
-    //    // after time turn on kinematick, so character cant move after die
-    //    //_characterRigidbody.isKinematic = true;
-    //}
+}
+
+public struct DamageHit
+{
+    public Vector3 point;
+    public Vector3 dir;
+    public DamageHit(Vector3 _point, Vector3 _dir)
+    {
+        point   = _point;
+        dir     = _dir;
+    }
 }

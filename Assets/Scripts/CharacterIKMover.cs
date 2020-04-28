@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoveBones : MonoBehaviour
+public class CharacterIKMover : MonoBehaviour
 {
     private Animator anim;
 
-
-    /// <summary>
-    ///  ---------------- for loot at target
-    /// </summary>
+    ///  ---------------- For loot at target
     [Range(0, 1)]
     public float bodyWeight;
     [Range(0, 1)]
@@ -21,28 +18,27 @@ public class MoveBones : MonoBehaviour
     [Range(0, 1)]
     public float powerIK = 1.0f;
 
-    public bool useLook = false;
-    public Transform target;
+    //  use look on point
+    private bool useLook = false;
     ///  -----------------------------------
-    ///  
     // shoulder for parent of aip, so aim move with shoulder
     private Transform shoulder;
     //for place where will be left hand
-    public Transform leftHandSpot;
-    // for place where will be right hand
-    public Vector3 rotationRightHand;
-    public Vector3 positionRightHand;
+    private SimpleTransform leftHandSpot;
+    private SimpleTransform rightHandSpot;
     // game objects
     private GameObject aimPivot;
     private GameObject leftHandPivot;
     private GameObject rightHandPivot;
 
+    public bool UseLook { get { return useLook; } set { useLook = value; } }
+
 
     // Start is called before the first frame update
     void Start()
     {
-        anim = GetComponent<Animator>();
-        shoulder = anim.GetBoneTransform(HumanBodyBones.RightShoulder);
+        anim        = GetComponent<Animator>();
+        shoulder    = anim.GetBoneTransform(HumanBodyBones.RightShoulder);
         // create empty objects
         aimPivot = new GameObject("aimPivot");
         aimPivot.transform.parent = shoulder;
@@ -57,51 +53,46 @@ public class MoveBones : MonoBehaviour
         rightHandPivot.transform.parent = aimPivot.transform;
         rightHandPivot.transform.localPosition = Vector3.zero;
 
-        Quaternion rightRot = Quaternion.Euler(rotationRightHand.x, rotationRightHand.y, rotationRightHand.z);
-        rightHandPivot.transform.localRotation = rightRot;
-        rightHandPivot.transform.localPosition = positionRightHand;
+        // start empty transforms
+        leftHandSpot    = new SimpleTransform();
+        rightHandSpot   = new SimpleTransform();
+
+        Debug.Log($"StartWeaponHandSpots: pos1: {leftHandSpot.position}, pos2: {rightHandSpot.position}");
+    }
+
+    public void UpdateWeaponHandSpots(SimpleTransform leftHand, SimpleTransform rightHand)
+    {
+        Debug.Log($"UpdateWeaponHandSpots: pos1: {leftHand.position}, pos2: {rightHand.position}");
+        leftHandSpot    = leftHand;
+        rightHandSpot   = rightHand;
     }
 
     // Update is called once per frame
     void Update()
     {
-        RotateToTarget();
-        // set leftHandPivot ro target pivot position
         leftHandPivot.transform.position = leftHandSpot.position;
         leftHandPivot.transform.rotation = leftHandSpot.rotation;
 
-        if (Input.GetMouseButtonDown(1))
-        {
-            useLook = true;
-            anim.SetLayerWeight(2, 1);
-        }
-
-        if (Input.GetMouseButtonUp(1))
-        {
-            useLook = false;
-            anim.SetLayerWeight(2, 0);
-        }
+        rightHandPivot.transform.position = rightHandSpot.position;
+        rightHandPivot.transform.rotation = rightHandSpot.rotation;
     }
 
-    private void RotateToTarget()
-    {
 
-    }
 
     void OnAnimatorIK(int layerIndex)
     {
         if (!useLook)
             return;
-        anim.SetLookAtWeight(powerIK, bodyWeight, headWeight, eyesWeight, lookClamp);
-        anim.SetLookAtPosition(target.position);
+        //anim.SetLookAtWeight(powerIK, bodyWeight, headWeight, eyesWeight, lookClamp);
+       // anim.SetLookAtPosition(target.position);
 
-        // move hand left
+        // move left hand
         anim.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
         anim.SetIKPosition(AvatarIKGoal.LeftHand, leftHandPivot.transform.position);
 
         anim.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
         anim.SetIKRotation(AvatarIKGoal.LeftHand, leftHandPivot.transform.rotation);
-        // move hand right
+        // move right hand
         anim.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
         anim.SetIKPosition(AvatarIKGoal.RightHand, rightHandPivot.transform.position);
 
@@ -109,4 +100,16 @@ public class MoveBones : MonoBehaviour
         anim.SetIKRotation(AvatarIKGoal.RightHand, rightHandPivot.transform.rotation);
     }
 
+}
+
+public struct SimpleTransform
+{
+    public Vector3 position;
+    public Quaternion rotation;
+
+    public SimpleTransform(Vector3 _position, Quaternion _rotation)
+    {
+        position = _position;
+        rotation = _rotation;
+    }
 }

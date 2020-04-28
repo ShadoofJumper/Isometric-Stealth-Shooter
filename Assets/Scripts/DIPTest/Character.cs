@@ -22,6 +22,15 @@ public class Character : MonoBehaviour
 
     public ICharacterInput CharacterInput   => input;
     public CharacterSettings Settings       => settings;
+    public Weapon CharacterWeapon {
+        get {
+            return weapon;
+        }
+        set {
+            weapon = value;
+            characterCombat.UpdateCharacterStatus(value);
+        }
+    }
 
     private void Start()
     {

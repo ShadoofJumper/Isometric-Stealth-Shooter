@@ -23,7 +23,7 @@ public class Weapon : MonoBehaviour
     public bool IsStoreEmpty        => isStoreEmpty;
     public int CurrentAmmoInStore   => ammoAmountInStore;
     public int CurrentAmmoAmmount   => ammoAmount;
-
+    public WeaponSettings WeaponSettings { get { return settings; } set { settings = value; } }
 
     // queue for bullet pool
     private Queue<GameObject> bulletPool = new Queue<GameObject>();
@@ -36,9 +36,9 @@ public class Weapon : MonoBehaviour
 
     private void Awake()
     {
-        ammoStoreMax = settings.AmmoStoreMax;
-        ammoAmountInStore = settings.AmmoAmountInStore;
-        ammoAmount = settings.AmmoAmount;
+        ammoStoreMax        = settings.AmmoStoreMax;
+        ammoAmountInStore   = settings.AmmoAmountInStore;
+        ammoAmount          = settings.AmmoAmount;
 
         if (ammoAmountInStore > 0)
         {

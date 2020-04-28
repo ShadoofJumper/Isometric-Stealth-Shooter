@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b574d924d6199a94bb4fb6ff947c47a5, type: 3}
-  m_Name: Weapon parametrs
+  m_Name: WeaponM107
   m_EditorClassIdentifier: 
   bulletSpeed: 40
   shootDelay: 0
@@ -19,3 +19,5 @@ MonoBehaviour:
   ammoAmountInStore: 6
   ammoAmount: 40
   ammoStoreMax: 8
+  weaponModel: {fileID: 8983630136207469107, guid: 630646d84d49cbe479de75d636739e1d,
+    type: 3}
