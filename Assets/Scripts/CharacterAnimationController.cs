@@ -102,12 +102,9 @@ public class CharacterAnimationController : MonoBehaviour
 
         RaycastHit hit;
         //Debug.DrawLine(origin, origin + dir * 2, Color.green);
-        if (Physics.Raycast(origin, dir, out hit, Mathf.Infinity))
-        {
+        if (Physics.Raycast(origin, dir, out hit, Mathf.Infinity)) {
             hit.rigidbody.AddForceAtPosition(impulseVelocity, hit.point, ForceMode.Impulse);
-        }
-        else
-        {
+        } else {
             characterSpine.attachedRigidbody.AddForce(impulseVelocity, ForceMode.Impulse);
         }
     }

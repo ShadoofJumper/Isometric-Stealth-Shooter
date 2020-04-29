@@ -131,7 +131,7 @@ public class Character : MonoBehaviour
         }
 
         // test
-        if (isPlayer && Input.GetKeyDown(KeyCode.D))
+        if (isPlayer && Input.GetKeyDown(KeyCode.L))
         {
             characterCombat.TakeDamage(5);
         }

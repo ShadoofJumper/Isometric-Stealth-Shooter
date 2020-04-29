@@ -61,7 +61,6 @@ public class Bullet: MonoBehaviour
     
     public void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("OnCollisionEnter: "+name);
         BulletCollide(collision);
     }
 
@@ -94,11 +93,6 @@ public class Bullet: MonoBehaviour
         {
             character.characterCombat.TakeDamage(_damage, collision.contacts[0], _velocity);
         }
-
-
-        //test
-        Debug.Log($"Name: {collision.rigidbody}");
-        collision.rigidbody.AddForceAtPosition(_velocity.normalized * 10, collision.contacts[0].point, ForceMode.Impulse);
     }
 
     public virtual void BulletDestroy()

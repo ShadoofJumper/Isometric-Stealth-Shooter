@@ -43,23 +43,30 @@ public class InventoryStubManager : MonoBehaviour
 
     public void Equip(WeaponSettings weaponSettings)
     {
-        // instantiate weapon
-        GameObject weapon       = Instantiate(weaponPrefab, handToMove);
-        weapon.name = "Weapon";
-        weapon.GetComponent<Weapon>().WeaponSettings = weaponSettings;
-        // instantiane weapon model
-        GameObject weaponModel = Instantiate(weaponSettings.WeaponModel, weapon.transform);
-        // get left and right hand spots
+        Weapon weaponComp = CreateWeapon(weaponSettings);
+
         SimpleTransform rightHandSpot   = new SimpleTransform(weaponSettings.RightHandSpotPos, Quaternion.Euler(weaponSettings.RightHandSpotRot));
-        Transform leftHandSpotTr = weaponSettings.WeaponModel.transform.GetChild(0);
+        Transform leftHandSpotTr        = weaponSettings.WeaponModel.transform.GetChild(0);
         SimpleTransform leftHandSpot    = new SimpleTransform(leftHandSpotTr.position, leftHandSpotTr.rotation);
 
         // add weapon to character
-        //CharacterWeapon
-        player.CharacterWeapon = weapon.GetComponent<Weapon>();
+        player.CharacterWeapon = weaponComp;
 
         // update player hands position on weapon
         playerIKMover.UpdateWeaponHandSpots(leftHandSpot, rightHandSpot);
+    }
+
+    public Weapon CreateWeapon(WeaponSettings weaponSettings)
+    {
+        // instantiate weapon
+        GameObject weaponMain   = Instantiate(weaponPrefab, handToMove);
+        GameObject weaponModel  = Instantiate(weaponSettings.WeaponModel, weaponMain.transform);
+        Weapon weaponComp       = weaponMain.GetComponent<Weapon>();
+        weaponMain.name         = "Weapon";
+        weaponComp.WeaponSettings = weaponSettings;
+        weaponComp.ShootSpot    = weaponModel.transform.GetChild(1);
+
+        return weaponComp;
     }
 
 }

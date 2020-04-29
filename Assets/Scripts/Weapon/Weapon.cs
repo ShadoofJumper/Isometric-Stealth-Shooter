@@ -6,7 +6,6 @@ public class Weapon : MonoBehaviour
 {
     [SerializeField] private WeaponSettings settings;
     [SerializeField] private GameObject     bulletOrigin;
-    [SerializeField] private Transform      shootSpot;
 
     [Header("Parameters for laser")]
     [SerializeField] private float          laserWidth;
@@ -23,11 +22,13 @@ public class Weapon : MonoBehaviour
     public bool IsStoreEmpty        => isStoreEmpty;
     public int CurrentAmmoInStore   => ammoAmountInStore;
     public int CurrentAmmoAmmount   => ammoAmount;
-    public WeaponSettings WeaponSettings { get { return settings; } set { settings = value; } }
+    public WeaponSettings WeaponSettings    { get { return settings; } set { settings = value; } }
+    public Transform ShootSpot              { get { return shootSpot; } set { shootSpot = value; } }
 
     // queue for bullet pool
     private Queue<GameObject> bulletPool = new Queue<GameObject>();
-    private int bulletPoolCounter;
+    private int         bulletPoolCounter;
+    private Transform   shootSpot;
 
     // game object for groupe bullets
     private GameObject bulletParent;
@@ -39,6 +40,7 @@ public class Weapon : MonoBehaviour
         ammoStoreMax        = settings.AmmoStoreMax;
         ammoAmountInStore   = settings.AmmoAmountInStore;
         ammoAmount          = settings.AmmoAmount;
+        shootSpot           = transform;
 
         if (ammoAmountInStore > 0)
         {
@@ -52,11 +54,11 @@ public class Weapon : MonoBehaviour
         bulletParent        = new GameObject();
         bulletParent.name   = "Bullet wepone:" + gameObject.name;
 
-        if (laserLineMask!=null)
+        if (laserLineMask != null)
         {
             laserLineMask.useWorldSpace = true;
-            laserLineMask.startWidth    = laserWidth;
-            laserLineMask.endWidth      = laserWidth;
+            laserLineMask.startWidth = laserWidth;
+            laserLineMask.endWidth = laserWidth;
         }
     }
 
