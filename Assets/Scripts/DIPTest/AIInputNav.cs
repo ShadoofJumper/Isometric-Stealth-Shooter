@@ -31,12 +31,15 @@ public class AIInputNav : ICharacterInput
     // for calculate currecnt speed of character
     private Vector3 previosPos;
     //properties
-    public bool IsOnPause       { get { return pause; }         set { pause = value; } }
-    public bool IsOnRotatePause { get { return rotatePause; }   set { rotatePause = value; } }
+    public bool IsOnPause           { get { return pause; }         set { pause = value; } }
+    public bool IsOnRotatePause     { get { return rotatePause; }   set { rotatePause = value; } }
+    public MouseInput[] MouseInput  { get { return mouseInput; } }
+    public Vector3 LookDirection    { get { return _objectToMove.transform.forward; }  }
+
     public InteractInfo InteractObejctInfo  => interactInfo;
     public Vector3 PointToMove              => poinToMove;
-    public MouseInput[] MouseInput { get { return mouseInput; } }
     public bool IsPressReload               => isPressReload;
+
 
     public AIInputNav(CharacterSettings settings, Transform objectToMove, MonoBehaviour myMonoBehavior)
     {

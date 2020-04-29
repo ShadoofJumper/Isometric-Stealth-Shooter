@@ -15,8 +15,9 @@ public class PlayerInput : ICharacterInput
     private Vector3 right;
     private float   velosityIsomFix;
     private Plane   gamePlane;
-
+    private Transform _objectToMove;
     public Vector3 PointToLook      { get { return pointToLook; } }
+    public Vector3 LookDirection    { get { return Vector3.Normalize(pointToLook - _objectToMove.position); } }
     public Vector3 Velocity         { get { return velocity; } }
     public Vector3 NotRawVelocity   { get { return notRawVelocity; } }
     public MouseInput[] MouseInput  { get { return mouseInput; } }
@@ -25,13 +26,13 @@ public class PlayerInput : ICharacterInput
     private Camera mainCamera;
 
     // constuctor for input
-    public PlayerInput()
+    public PlayerInput(Transform objectToMove)
     {
+        _objectToMove = objectToMove;
         mainCamera = Camera.main;
-
-        forward = Camera.main.transform.forward;
-        forward.y = 0;
-        right = Quaternion.Euler(0, 90, 0) * forward;
+        forward         = Camera.main.transform.forward;
+        forward.y       = 0;
+        right           = Quaternion.Euler(0, 90, 0) * forward;
         // for velocity bug fix
         velosityIsomFix = 2.0f;
 

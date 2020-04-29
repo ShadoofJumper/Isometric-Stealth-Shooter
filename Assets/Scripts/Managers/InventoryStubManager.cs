@@ -43,17 +43,7 @@ public class InventoryStubManager : MonoBehaviour
 
     public void Equip(WeaponSettings weaponSettings)
     {
-        Weapon weaponComp = CreateWeapon(weaponSettings);
-
-        SimpleTransform rightHandSpot   = new SimpleTransform(weaponSettings.RightHandSpotPos, Quaternion.Euler(weaponSettings.RightHandSpotRot));
-        Transform leftHandSpotTr        = weaponSettings.WeaponModel.transform.GetChild(0);
-        SimpleTransform leftHandSpot    = new SimpleTransform(leftHandSpotTr.position, leftHandSpotTr.rotation);
-
-        // add weapon to character
-        player.CharacterWeapon = weaponComp;
-
-        // update player hands position on weapon
-        playerIKMover.UpdateWeaponHandSpots(leftHandSpot, rightHandSpot);
+        CreateWeapon(weaponSettings);
     }
 
     public Weapon CreateWeapon(WeaponSettings weaponSettings)
@@ -65,6 +55,17 @@ public class InventoryStubManager : MonoBehaviour
         weaponMain.name         = "Weapon";
         weaponComp.WeaponSettings = weaponSettings;
         weaponComp.ShootSpot    = weaponModel.transform.GetChild(1);
+
+        SimpleTransform rightHandSpot   = new SimpleTransform(weaponSettings.RightHandSpotPos, Quaternion.Euler(weaponSettings.RightHandSpotRot));
+        Transform leftHandSpotTr        = weaponModel.transform.GetChild(0);
+        SimpleTransform leftHandSpot    = new SimpleTransform(leftHandSpotTr.position, leftHandSpotTr.rotation);
+
+        // add weapon to character
+        player.CharacterWeapon = weaponComp;
+
+        // update player hands position on weapon
+        playerIKMover.UpdateWeaponHandSpots(leftHandSpotTr, rightHandSpot);
+
 
         return weaponComp;
     }

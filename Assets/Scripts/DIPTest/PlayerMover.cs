@@ -74,7 +74,7 @@ public class PlayerMover : ICharacterMover
     public void UpdateMover()
     {
         //get point to look and calculate object rotation
-        Vector3 lookDir = _input.PointToLook - _objectToMove.transform.position;
+        Vector3 lookDir = _input.LookDirection;
         lookDir.y = 0;
         Debug.DrawLine(_objectToMove.transform.position, _input.PointToLook, Color.red);
         Quaternion newRotateion = Quaternion.LookRotation(lookDir.normalized);

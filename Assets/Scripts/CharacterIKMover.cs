@@ -19,17 +19,21 @@ public class CharacterIKMover : MonoBehaviour
     public float powerIK = 1.0f;
 
     //  use look on point
-    private bool useLook = false;
+    public bool useLook = false;
     ///  -----------------------------------
     // shoulder for parent of aip, so aim move with shoulder
     private Transform shoulder;
-    //for place where will be left hand
-    private SimpleTransform leftHandSpot;
-    private SimpleTransform rightHandSpot;
     // game objects
     private GameObject aimPivot;
     private GameObject leftHandPivot;
     private GameObject rightHandPivot;
+    //test
+    private Transform leftHandSpotObject;
+    private GameObject rightHandSpotObject;
+    //
+    private Character _character;
+    //private Vector3 charDirection;
+
 
     public bool UseLook { get { return useLook; } set { useLook = value; } }
 
@@ -37,8 +41,16 @@ public class CharacterIKMover : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        anim        = GetComponent<Animator>();
-        shoulder    = anim.GetBoneTransform(HumanBodyBones.RightShoulder);
+        anim            = GetComponent<Animator>();
+        shoulder        = anim.GetBoneTransform(HumanBodyBones.RightShoulder);
+        _character      = GetComponentInParent<Character>();
+        //charDirection   = _character.CharacterInput.LookDirection;
+
+        CreateObjectsForIKMove();
+    }
+
+    private void CreateObjectsForIKMove()
+    {
         // create empty objects
         aimPivot = new GameObject("aimPivot");
         aimPivot.transform.parent = shoulder;
@@ -54,38 +66,49 @@ public class CharacterIKMover : MonoBehaviour
         rightHandPivot.transform.localPosition = Vector3.zero;
 
         // start empty transforms
-        leftHandSpot    = new SimpleTransform();
-        rightHandSpot   = new SimpleTransform();
-
-        Debug.Log($"StartWeaponHandSpots: pos1: {leftHandSpot.position}, pos2: {rightHandSpot.position}");
+        rightHandSpotObject = new GameObject("rightHandSpot");
+        rightHandSpotObject.transform.parent = shoulder;
     }
 
-    public void UpdateWeaponHandSpots(SimpleTransform leftHand, SimpleTransform rightHand)
+    public void UpdateWeaponHandSpots(Transform leftHandObject, SimpleTransform rightHand)
     {
-        Debug.Log($"UpdateWeaponHandSpots: pos1: {leftHand.position}, pos2: {rightHand.position}");
-        leftHandSpot    = leftHand;
-        rightHandSpot   = rightHand;
+        Debug.Log($"rightHand: pos: {rightHand.position}, rot: {rightHand.rotation}");
+        rightHandSpotObject.transform.localPosition = rightHand.position;
+        rightHandSpotObject.transform.localRotation = rightHand.rotation;
+        leftHandSpotObject = leftHandObject;
     }
 
     // Update is called once per frame
     void Update()
     {
-        leftHandPivot.transform.position = leftHandSpot.position;
-        leftHandPivot.transform.rotation = leftHandSpot.rotation;
+        if (leftHandSpotObject == null)
+            return;
+        leftHandPivot.transform.position = leftHandSpotObject.position;
+        leftHandPivot.transform.rotation = leftHandSpotObject.rotation;
 
-        rightHandPivot.transform.position = rightHandSpot.position;
-        rightHandPivot.transform.rotation = rightHandSpot.rotation;
+        rightHandPivot.transform.position = rightHandSpotObject.transform.position;
+        rightHandPivot.transform.rotation = rightHandSpotObject.transform.rotation;
     }
 
 
 
     void OnAnimatorIK(int layerIndex)
     {
+
+        Vector3 lookPosition = _character.gameObject.transform.position + _character.gameObject.transform.forward * 5;
+        lookPosition.y = 2.5f;
+        //Debug.Log($"char pos: {_character.gameObject.transform.position}");
+        //Debug.Log($"look pos: {lookPosition}");
+        //Debug.Log($"look dir: {_character.CharacterInput.LookDirection}");
+
+        //test
+        Debug.DrawLine(_character.gameObject.transform.position, lookPosition, Color.blue);
+
+        anim.SetLookAtWeight(powerIK, bodyWeight, headWeight, eyesWeight, lookClamp);
+        anim.SetLookAtPosition(lookPosition);
+
         if (!useLook)
             return;
-        //anim.SetLookAtWeight(powerIK, bodyWeight, headWeight, eyesWeight, lookClamp);
-       // anim.SetLookAtPosition(target.position);
-
         // move left hand
         anim.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
         anim.SetIKPosition(AvatarIKGoal.LeftHand, leftHandPivot.transform.position);

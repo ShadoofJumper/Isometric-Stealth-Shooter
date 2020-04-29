@@ -26,6 +26,8 @@ public class AIInput : ICharacterInput
     public MouseInput[] MouseInput => mouseInput;
     public bool IsPressReload => isPressReload;
 
+    public Vector3 LookDirection => throw new System.NotImplementedException();
+
     // constuctor for input
     public AIInput(CharacterSettings settings, Transform objectToMove, MonoBehaviour myMonoBehaviour)
     {

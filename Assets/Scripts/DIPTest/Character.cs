@@ -50,7 +50,7 @@ public class Character : MonoBehaviour
         isAlive         = true;
 
         //create input for player or AI nav
-        input               = !isPlayer ? new AIInputNav(settings, transform, this) as ICharacterInput : new PlayerInput();
+        input               = !isPlayer ? new AIInputNav(settings, transform, this) as ICharacterInput : new PlayerInput(transform);
         //create mover
         characterMover      = !isPlayer ? new AIMover(input, gameObject, settings) as ICharacterMover : new PlayerMover(input, transform, settings);
         //create character combat

@@ -23,7 +23,7 @@ public class CameraController : MonoBehaviour
     // flag for switch global and local look of player
     private bool isGlobalLook = false;
     // for get player look pint
-    private PlayerInput playerInput;
+    private ICharacterInput playerInput;
 
     private void Awake()
     {
@@ -42,7 +42,7 @@ public class CameraController : MonoBehaviour
 
     void Start()
     {
-        playerInput = SceneController.instance.player.CharacterInput as PlayerInput;
+        playerInput = SceneController.instance.player.CharacterInput;
 
     }
 
@@ -73,10 +73,7 @@ public class CameraController : MonoBehaviour
     private void MoveCamera()
     {
         // look direction
-        Vector3 targetLookDirection = (playerInput.PointToLook - target.position);
-        Vector3 pointLookFix = playerInput.PointToLook;
-        pointLookFix.y = 0.5f;
-        //Debug.DrawLine(target.position, pointLookFix, Color.red);
+        Vector3 targetLookDirection = playerInput.LookDirection;
         Vector3 cameraMouseOffset = Vector3.zero;
 
         //if global look
