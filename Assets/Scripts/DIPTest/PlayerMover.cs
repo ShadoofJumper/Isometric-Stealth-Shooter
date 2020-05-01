@@ -12,13 +12,13 @@ public class PlayerMover : ICharacterMover
     private SpeedParams         _speed;
     private int speedId = 1;
     private float currentSpeed;
-
+    GameObject _test;
     // properties
     public float    CurrentSpeed   { get { return currentSpeed; }  set { currentSpeed  = value; } }
     public int      SpeedId        { get { return speedId; }       set { speedId       = value; } }
 
 
-    public PlayerMover(ICharacterInput input, Transform objectToMove, CharacterSettings settings)
+    public PlayerMover(ICharacterInput input, Transform objectToMove, CharacterSettings settings, GameObject test)
     {
         _input              = input as PlayerInput;
         _objectToMove       = objectToMove;
@@ -27,6 +27,8 @@ public class PlayerMover : ICharacterMover
         _charAnim           = objectToMove.GetComponentInChildren<CharacterAnimationController>();
         _speed              = new SpeedParams(settings.Speed);
         currentSpeed        = _speed.walk;
+
+        _test = test;
     }
 
     // can be method for spawn place
@@ -73,11 +75,10 @@ public class PlayerMover : ICharacterMover
     // call in updaye
     public void UpdateMover()
     {
-        //get point to look and calculate object rotation
-        Vector3 lookDir = _input.LookDirection;
-        lookDir.y = 0;
         Debug.DrawLine(_objectToMove.transform.position, _input.PointToLook, Color.red);
-        Quaternion newRotateion = Quaternion.LookRotation(lookDir.normalized);
+        _test.transform.position = _input.PointToLook;
+
+        Quaternion newRotateion = Quaternion.LookRotation(_input.LookDirection);
         _objectToMoveRig.MoveRotation(newRotateion);
     }
 

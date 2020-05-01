@@ -11,15 +11,11 @@ public class Character : MonoBehaviour
     private ICharacterInput input;
     public  ICharacterMover characterMover;
     public Weapon weapon;
-
     public bool isAlive     = false;
     public bool isOnPause   = false;
-
     public bool isPlayer;
-
     public CharacterCombat characterCombat;
     private CharacterAnimationController charAnim;
-
     public ICharacterInput CharacterInput   => input;
     public CharacterSettings Settings       => settings;
     public Weapon CharacterWeapon {
@@ -31,6 +27,10 @@ public class Character : MonoBehaviour
             characterCombat.UpdateCharacterStatus(value);
         }
     }
+
+    //test
+    public GameObject sphereTest;
+
 
     private void Start()
     {
@@ -52,7 +52,7 @@ public class Character : MonoBehaviour
         //create input for player or AI nav
         input               = !isPlayer ? new AIInputNav(settings, transform, this) as ICharacterInput : new PlayerInput(transform);
         //create mover
-        characterMover      = !isPlayer ? new AIMover(input, gameObject, settings) as ICharacterMover : new PlayerMover(input, transform, settings);
+        characterMover      = !isPlayer ? new AIMover(input, gameObject, settings) as ICharacterMover : new PlayerMover(input, transform, settings, sphereTest);
         //create character combat
         characterCombat     = new CharacterCombat(input, settings.Health, weapon, gameObject, this);
         charAnim            = gameObject.GetComponentInChildren<CharacterAnimationController>();

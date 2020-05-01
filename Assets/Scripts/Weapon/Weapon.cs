@@ -11,13 +11,15 @@ public class Weapon : MonoBehaviour
     [SerializeField] private float          laserWidth;
     [SerializeField] private float          laserDistance;
     // use for mask
-    [SerializeField] private LineRenderer   laserLineMask;
+    [SerializeField] private LineRenderer   laserLineRender;
     [SerializeField] private LayerMask      laserObsticalsMask;
 
-    private bool isStoreEmpty = true;
-    private int ammoStoreMax;
-    private int ammoAmountInStore;
-    private int ammoAmount;
+    private bool        isStoreEmpty = true;
+    private int         ammoStoreMax;
+    private int         ammoAmountInStore;
+    private int         ammoAmount;
+    private Transform   shootSpot;
+    private Vector3     shootDirection;
 
     public bool IsStoreEmpty        => isStoreEmpty;
     public int CurrentAmmoInStore   => ammoAmountInStore;
@@ -27,20 +29,21 @@ public class Weapon : MonoBehaviour
 
     // queue for bullet pool
     private Queue<GameObject> bulletPool = new Queue<GameObject>();
-    private int         bulletPoolCounter;
-    private Transform   shootSpot;
-
-    // game object for groupe bullets
+    private int bulletPoolCounter;
     private GameObject bulletParent;
-    // dictionary for components of bullets
     private Dictionary<GameObject, Bullet> bulletDict = new Dictionary<GameObject, Bullet>();
+
+    //weapom character
+    Character weaponChar;
 
     private void Awake()
     {
         ammoStoreMax        = settings.AmmoStoreMax;
         ammoAmountInStore   = settings.AmmoAmountInStore;
         ammoAmount          = settings.AmmoAmount;
+        //set default
         shootSpot           = transform;
+        shootDirection      = transform.forward;
 
         if (ammoAmountInStore > 0)
         {
@@ -48,17 +51,41 @@ public class Weapon : MonoBehaviour
         }
     }
 
+    public void WeaponInitialized(Character weaponChar, WeaponSettings weaponSettings, Transform shootSpot)
+    {
+        this.shootSpot      = shootSpot;
+        this.settings       = weaponSettings;
+        this.weaponChar     = weaponChar;
+        this.shootDirection = CalculateShootDirection(weaponChar);
+    }
+
+    private Vector3 CalculateShootDirection(Character weaponChar)
+    {
+        Vector3 dir;
+        // if ai
+        if (!weaponChar.isPlayer) {
+            Debug.Log("aaa1");
+            dir = weaponChar.CharacterInput.LookDirection;
+        } else {
+            Debug.Log("aaa2");
+            PlayerInput playerInput = weaponChar.CharacterInput as PlayerInput;
+            Vector3 pointToLook     = playerInput.PointToLook;
+            dir = Vector3.Normalize(playerInput.PointToLook - shootSpot.position);
+        }
+        return dir;
+    }
+
     void Start()
     {
-        // create emptyyobject for future bullets
+        // create empty object for future bullets
         bulletParent        = new GameObject();
-        bulletParent.name   = "Bullet wepone:" + gameObject.name;
+        bulletParent.name   = "Bullets weapon:" + gameObject.name;
 
-        if (laserLineMask != null)
+        if (laserLineRender != null)
         {
-            laserLineMask.useWorldSpace = true;
-            laserLineMask.startWidth = laserWidth;
-            laserLineMask.endWidth = laserWidth;
+            laserLineRender.useWorldSpace = true;
+            laserLineRender.startWidth    = laserWidth;
+            laserLineRender.endWidth      = laserWidth;
         }
     }
 
@@ -67,13 +94,9 @@ public class Weapon : MonoBehaviour
     {
         if (ammoAmountInStore > 0)
         {
-            // minus ammo
             ammoAmountInStore -= 1;
-
             Shoot();
-
         }
-        // if after shoot no emmo
         if (ammoAmountInStore == 0)
         {
             isStoreEmpty = true;
@@ -114,14 +137,19 @@ public class Weapon : MonoBehaviour
         }
     }
 
+    //TEST
+    private void Update()
+    {
+        //ShootLaser();
+    }
 
     public void ShootLaser()
     {
-        Vector3 startPoint = transform.position;
-        Vector3 finisPoint = transform.position + shootSpot.transform.forward * laserDistance;
-        //for mask
-        laserLineMask.SetPosition(0, startPoint);
-        laserLineMask.SetPosition(1, finisPoint);
+        Vector3 startPoint = shootSpot.position;
+        Vector3 finisPoint = shootSpot.position + shootDirection * laserDistance;
+
+        laserLineRender.SetPosition(0, startPoint);
+        laserLineRender.SetPosition(1, finisPoint);
 
         // shoot raycast
         Vector3 dir = (finisPoint - startPoint).normalized;
@@ -129,55 +157,54 @@ public class Weapon : MonoBehaviour
 
         if (Physics.Raycast(transform.position, dir, out hit, laserDistance, laserObsticalsMask))
         {
-            laserLineMask.SetPosition(1, hit.point);
+            laserLineRender.SetPosition(1, hit.point);
         }
     }
 
     private void Shoot()
-    {
-        GameObject bulletObject;
-        // if not have bullet in pull then take from pool
-        if (bulletPool.Count != 0)
-        {
-            // take from start of pool
-            bulletObject = bulletPool.Dequeue();
-            //get bullet
-            Bullet bullet = bulletDict[bulletObject];
-            //set start position and speed
-            bulletObject.SetActive(true);
-            bulletObject.transform.position = shootSpot.position;
-            bullet.SpeedMove    = settings.Speed;
-            bullet.Velocity     = transform.forward;
-            bullet.StartBulletMove();
-        }
-        else
-        {
-            bulletObject = Instantiate(bulletOrigin, shootSpot.position, Quaternion.identity);
-            //disable renderer of bullet if laser on
-            //bulletObject.GetComponent<MeshRenderer>().enabled = false;
-            // set parent for groupe
-            bulletObject.transform.SetParent(bulletParent.transform);
-            // program add script to bullet, in future script can be change depend on bullet type
-            Bullet bullet = bulletObject.AddComponent<Bullet>();
-            // add to dict
-            bulletDict.Add(bulletObject, bullet);
+    {        
+        // create or take from pull
+        Bullet bullet = bulletPool.Count != 0 ? GetBullet() : CreateBullet();
 
-            bullet.SpeedMove    = settings.Speed;
-            bullet.Velocity     = transform.forward;
-            bullet.Damage       = settings.Damage;
-            // add delegate to bullet action
-            bullet.OnDestroyBullet  = OnBulletDestroy;
-            bullet.name             = "Bullet_" + bulletPoolCounter;
-            bullet.StartBulletMove();
-            // add bullet to end of pool
-            bulletPoolCounter++;
-        }
+        bullet.SpeedMove    = settings.Speed;
+        bullet.Velocity     = shootSpot.forward;
+        bullet.StartBulletMove();
+    }
+
+    private Bullet CreateBullet()
+    {
+        GameObject bulletObject = Instantiate(bulletOrigin, shootSpot.position, Quaternion.identity);
+        // set parent for groupe
+        bulletObject.transform.SetParent(bulletParent.transform);
+        // program add script to bullet, in future script can be change depend on bullet type
+        Bullet bullet = bulletObject.AddComponent<Bullet>();
+        // add to dict
+        bulletDict.Add(bulletObject, bullet);
+        bullet.Damage = settings.Damage;
+        // add delegate to bullet action
+        bullet.OnDestroyBullet = OnBulletDestroy;
+        bullet.name             = "Bullet_" + bulletPoolCounter;
+        // add bullet to end of pool
+        bulletPoolCounter++;
+        return bullet;
+    }
+
+    private Bullet GetBullet()
+    {
+        // take from start of pool
+        GameObject bulletObject = bulletPool.Dequeue();
+        // get bullet comp
+        Bullet bullet = bulletDict[bulletObject];
+        bulletObject.SetActive(true);
+        bulletObject.transform.position = shootSpot.position;
+
+        return bullet;
     }
 
     public virtual void RightButtonDown()
     {
         // turn on laser
-        laserLineMask.enabled = true;
+        laserLineRender.enabled = true;
         ShootLaser();
     }
 
@@ -191,7 +218,7 @@ public class Weapon : MonoBehaviour
     public virtual void RightButtonUp()
     {
         // turn on laser
-        laserLineMask.enabled = false;
+        laserLineRender.enabled = false;
     }
 
     //call when bullet destroy

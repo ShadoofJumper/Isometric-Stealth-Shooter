@@ -96,10 +96,9 @@ MonoBehaviour:
   settings: {fileID: 11400000, guid: 8e7ead3e28237b944a5b9560956ea57e, type: 2}
   bulletOrigin: {fileID: 8259761841207500806, guid: cc79f49e6db46404ebd30962f829d687,
     type: 3}
-  shootSpot: {fileID: 0}
   laserWidth: 0.05
   laserDistance: 99
-  laserLineMask: {fileID: 5873744618757481961}
+  laserLineRender: {fileID: 5873744618757481961}
   laserObsticalsMask:
     serializedVersion: 2
     m_Bits: 3584

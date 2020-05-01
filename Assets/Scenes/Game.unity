@@ -1251,6 +1251,7 @@ MonoBehaviour:
   isAlive: 1
   isOnPause: 0
   isPlayer: 1
+  sphereTest: {fileID: 1007020197}
 --- !u!54 &152456473
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5665,7 +5666,7 @@ Camera:
   far clip plane: 1000
   field of view: 74
   orthographic: 1
-  orthographic size: 8
+  orthographic size: 11
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -5847,7 +5848,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1007020197}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.41, y: 1.38, z: 7.408961}
+  m_LocalPosition: {x: -5.93, y: 1.38, z: -18.51}
   m_LocalScale: {x: 0.21714, y: 0.21714, z: 0.21714}
   m_Children: []
   m_Father: {fileID: 0}
@@ -12605,9 +12606,10 @@ MonoBehaviour:
   bodyWeight: 1
   headWeight: 1
   eyesWeight: 1
-  lookClamp: 1
-  powerIK: 1
-  useLook: 0
+  lookClamp: 0
+  powerLookIK: 1
+  useLook: 1
+  test: {x: 0, y: 20, z: 0}
 --- !u!1 &7308698244436737106
 GameObject:
   m_ObjectHideFlags: 0

@@ -73,7 +73,6 @@ public class CameraController : MonoBehaviour
     private void MoveCamera()
     {
         // look direction
-        Vector3 targetLookDirection = playerInput.LookDirection;
         Vector3 cameraMouseOffset = Vector3.zero;
 
         //if global look

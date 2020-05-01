@@ -21,5 +21,5 @@ MonoBehaviour:
   ammoStoreMax: 8
   weaponModel: {fileID: 8983630136207469107, guid: 630646d84d49cbe479de75d636739e1d,
     type: 3}
-  weaponRightHandPos: {x: -0.034, y: 0.397, z: 0.2}
-  weaponRightHandRot: {x: -8, y: -116, z: 27}
+  weaponRightHandPos: {x: 0.128, y: 1.774, z: 0.5}
+  weaponRightHandRot: {x: -6.5, y: -38, z: -90}

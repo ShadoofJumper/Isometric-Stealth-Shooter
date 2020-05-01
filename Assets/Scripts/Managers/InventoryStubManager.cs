@@ -53,8 +53,7 @@ public class InventoryStubManager : MonoBehaviour
         GameObject weaponModel  = Instantiate(weaponSettings.WeaponModel, weaponMain.transform);
         Weapon weaponComp       = weaponMain.GetComponent<Weapon>();
         weaponMain.name         = "Weapon";
-        weaponComp.WeaponSettings = weaponSettings;
-        weaponComp.ShootSpot    = weaponModel.transform.GetChild(1);
+        weaponComp.WeaponInitialized(player, weaponSettings, weaponModel.transform.GetChild(1));
 
         SimpleTransform rightHandSpot   = new SimpleTransform(weaponSettings.RightHandSpotPos, Quaternion.Euler(weaponSettings.RightHandSpotRot));
         Transform leftHandSpotTr        = weaponModel.transform.GetChild(0);

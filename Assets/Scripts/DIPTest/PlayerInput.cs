@@ -17,7 +17,13 @@ public class PlayerInput : ICharacterInput
     private Plane   gamePlane;
     private Transform _objectToMove;
     public Vector3 PointToLook      { get { return pointToLook; } }
-    public Vector3 LookDirection    { get { return Vector3.Normalize(pointToLook - _objectToMove.position); } }
+    public Vector3 LookDirection    {
+        get {
+            Vector3 temp = Vector3.Normalize(pointToLook - _objectToMove.position);
+            temp.y = 0.0f;
+            return temp;
+        }
+    }
     public Vector3 Velocity         { get { return velocity; } }
     public Vector3 NotRawVelocity   { get { return notRawVelocity; } }
     public MouseInput[] MouseInput  { get { return mouseInput; } }
