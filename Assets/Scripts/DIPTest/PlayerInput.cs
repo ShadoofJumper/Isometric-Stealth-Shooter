@@ -5,11 +5,12 @@ using UnityEngine.EventSystems;
 
 public class PlayerInput : ICharacterInput
 {
-    private Vector3 pointToLook;
-    private Vector3 velocity;
-    private Vector3 notRawVelocity;
-    private MouseInput[] mouseInput = new MouseInput[] {new MouseInput(), new MouseInput()};
-    private bool isPressReload = false;
+    private Vector3         pointToLook;
+    private Vector3         velocity;
+    private Vector3         notRawVelocity;
+    private MouseInput[]    mouseInput = new MouseInput[] {new MouseInput(), new MouseInput()};
+    private bool            isPressReload = false;
+    private float           playerEyesLevel = 2.5f;
     // for correct isometrical rotation
     private Vector3 forward;
     private Vector3 right;
@@ -44,7 +45,7 @@ public class PlayerInput : ICharacterInput
 
         // create plane for raycast ray on it and get player look point
         // set level of plane on player eye level
-        gamePlane = new Plane(Vector3.up, new Vector3(0, 2.5f, 0));
+        gamePlane = new Plane(Vector3.up, new Vector3(0, playerEyesLevel, 0));
     }
 
     private void UpdateMouseInput(int mouseId)
@@ -99,7 +100,29 @@ public class PlayerInput : ICharacterInput
         {
             pointToLook = ray.GetPoint(enter);
         }
+        //pointToLook = ClampPointToLook(pointToLook, 8, 15);
+        //pointToLook.y = playerEyesLevel;
     }
+
+    private Vector3 ClampPointToLook(Vector3 point, float minRange, float maxRange)
+    {
+        Vector3 offsetFromCenter = pointToLook - _objectToMove.transform.position;
+        offsetFromCenter.y = 0;
+
+        double om = offsetFromCenter.sqrMagnitude;
+        if (om > (double)maxRange * (double)maxRange)
+        {
+            return _objectToMove.transform.position + offsetFromCenter.normalized * maxRange;
+        }
+        else if (om < (double)minRange * (double)minRange)
+        {
+            return _objectToMove.transform.position + offsetFromCenter.normalized * minRange;
+        }
+
+
+        return point;
+    }
+
 
 }
 

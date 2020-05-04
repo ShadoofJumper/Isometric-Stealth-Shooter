@@ -34,7 +34,8 @@ public class AIInputNav : ICharacterInput
     public bool IsOnPause           { get { return pause; }         set { pause = value; } }
     public bool IsOnRotatePause     { get { return rotatePause; }   set { rotatePause = value; } }
     public MouseInput[] MouseInput  { get { return mouseInput; } }
-    public Vector3 LookDirection    { get { return _objectToMove.transform.forward; }  }
+    public Vector3 LookDirection    { get { return _objectToMove.transform.forward; } }
+    public Vector3 PointToLook      { get { return _objectToMove.transform.position +_objectToMove.transform.forward; } }
 
     public InteractInfo InteractObejctInfo  => interactInfo;
     public Vector3 PointToMove              => poinToMove;

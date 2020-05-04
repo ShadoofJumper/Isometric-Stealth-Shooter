@@ -20,6 +20,7 @@ public class Weapon : MonoBehaviour
     private int         ammoAmount;
     private Transform   shootSpot;
     private Vector3     shootDirection;
+    private float       timeToFire;
 
     public bool IsStoreEmpty        => isStoreEmpty;
     public int CurrentAmmoInStore   => ammoAmountInStore;
@@ -34,7 +35,8 @@ public class Weapon : MonoBehaviour
     private Dictionary<GameObject, Bullet> bulletDict = new Dictionary<GameObject, Bullet>();
 
     //weapom character
-    Character weaponChar;
+    Character   weaponChar;
+    ICharacterInput inputChar;
 
     private void Awake()
     {
@@ -46,9 +48,7 @@ public class Weapon : MonoBehaviour
         shootDirection      = transform.forward;
 
         if (ammoAmountInStore > 0)
-        {
             isStoreEmpty = false;
-        }
     }
 
     public void WeaponInitialized(Character weaponChar, WeaponSettings weaponSettings, Transform shootSpot)
@@ -56,24 +56,25 @@ public class Weapon : MonoBehaviour
         this.shootSpot      = shootSpot;
         this.settings       = weaponSettings;
         this.weaponChar     = weaponChar;
-        this.shootDirection = CalculateShootDirection(weaponChar);
+        this.inputChar      = weaponChar.CharacterInput;
     }
 
     private Vector3 CalculateShootDirection(Character weaponChar)
     {
-        Vector3 dir;
-        // if ai
-        if (!weaponChar.isPlayer) {
-            Debug.Log("aaa1");
-            dir = weaponChar.CharacterInput.LookDirection;
-        } else {
-            Debug.Log("aaa2");
-            PlayerInput playerInput = weaponChar.CharacterInput as PlayerInput;
-            Vector3 pointToLook     = playerInput.PointToLook;
-            dir = Vector3.Normalize(playerInput.PointToLook - shootSpot.position);
-        }
-        return dir;
+        if (!weaponChar.isPlayer)
+            return inputChar.LookDirection;
+
+        return Vector3.Normalize(inputChar.PointToLook - shootSpot.position);
     }
+
+
+    //TEST
+    private void Update()
+    {
+        if(weaponChar!=null)
+            shootDirection = CalculateShootDirection(weaponChar);
+    }
+
 
     void Start()
     {
@@ -90,20 +91,6 @@ public class Weapon : MonoBehaviour
     }
 
 
-    public virtual bool LeftButtonShoot()
-    {
-        if (ammoAmountInStore > 0)
-        {
-            ammoAmountInStore -= 1;
-            Shoot();
-        }
-        if (ammoAmountInStore == 0)
-        {
-            isStoreEmpty = true;
-            return false;
-        }
-        return true;
-    }
 
     public void Reload()
     {
@@ -137,13 +124,9 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    //TEST
-    private void Update()
-    {
-        //ShootLaser();
-    }
 
-    public void ShootLaser()
+
+    public void ShootExtra()
     {
         Vector3 startPoint = shootSpot.position;
         Vector3 finisPoint = shootSpot.position + shootDirection * laserDistance;
@@ -164,10 +147,9 @@ public class Weapon : MonoBehaviour
     private void Shoot()
     {        
         // create or take from pull
-        Bullet bullet = bulletPool.Count != 0 ? GetBullet() : CreateBullet();
-
+        Bullet bullet       = bulletPool.Count != 0 ? GetBullet() : CreateBullet();
         bullet.SpeedMove    = settings.Speed;
-        bullet.Velocity     = shootSpot.forward;
+        bullet.Velocity     = shootDirection;
         bullet.StartBulletMove();
     }
 
@@ -177,14 +159,11 @@ public class Weapon : MonoBehaviour
         // set parent for groupe
         bulletObject.transform.SetParent(bulletParent.transform);
         // program add script to bullet, in future script can be change depend on bullet type
-        Bullet bullet = bulletObject.AddComponent<Bullet>();
-        // add to dict
-        bulletDict.Add(bulletObject, bullet);
-        bullet.Damage = settings.Damage;
-        // add delegate to bullet action
-        bullet.OnDestroyBullet = OnBulletDestroy;
+        Bullet bullet           = bulletObject.AddComponent<Bullet>();
+        bullet.Damage           = settings.Damage;
+        bullet.OnDestroyBullet  = OnBulletDestroy;
         bullet.name             = "Bullet_" + bulletPoolCounter;
-        // add bullet to end of pool
+        bulletDict.Add(bulletObject, bullet);
         bulletPoolCounter++;
         return bullet;
     }
@@ -205,14 +184,6 @@ public class Weapon : MonoBehaviour
     {
         // turn on laser
         laserLineRender.enabled = true;
-        ShootLaser();
-    }
-
-
-    public virtual void RightButtonHold()
-    {
-        // turn on laser
-        ShootLaser();
     }
 
     public virtual void RightButtonUp()
@@ -220,6 +191,32 @@ public class Weapon : MonoBehaviour
         // turn on laser
         laserLineRender.enabled = false;
     }
+
+    public virtual void RightButtonHold()
+    {
+        // turn on laser
+        ShootExtra();
+    }
+
+    public virtual void LeftButtonHold()
+    {
+        // check if time to shoot
+        if (Time.time >= timeToFire)
+        {
+            timeToFire = Time.time + 1 / settings.FireRate;
+            if (ammoAmountInStore > 0)
+            {
+                ammoAmountInStore -= 1;
+                Shoot();
+            }
+            else
+            {
+                isStoreEmpty = true;
+            }
+        }
+    }
+
+
 
     //call when bullet destroy
     private void OnBulletDestroy(GameObject destroyBulletObject)

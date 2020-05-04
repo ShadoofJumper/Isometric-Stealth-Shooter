@@ -4,7 +4,7 @@
 public class WeaponSettings : ScriptableObject
 {
     [SerializeField] private float bulletSpeed;
-    [SerializeField] private float shootDelay;
+    [SerializeField] private float fireRate;
     [SerializeField] private float reload;
     [SerializeField] private float damage;
     // current ammo in store
@@ -18,7 +18,7 @@ public class WeaponSettings : ScriptableObject
     [SerializeField] private Vector3 weaponRightHandRot;
 
     public float Speed      { get { return bulletSpeed; }}
-    public float ShootDelay { get { return shootDelay; }}
+    public float FireRate { get { return fireRate; }}
     public float Reload     { get { return reload; } }
     public float Damage     { get { return damage; } }
     public int AmmoAmountInStore { get { return ammoAmountInStore; } }

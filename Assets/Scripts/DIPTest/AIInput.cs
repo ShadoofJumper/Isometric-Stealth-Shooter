@@ -17,16 +17,15 @@ public class AIInput : ICharacterInput
     private Vector3 pointToLook;
     private Vector3 velocity;
     private Vector3 notRawVelocity;
-
     private bool isPressReload = false;
-    public Vector3 PointToLook { get { return pointToLook; } }
-    public Vector3 Velocity { get { return velocity; } }
-    public Vector3 NotRawVelocity { get { return notRawVelocity; } }
 
-    public MouseInput[] MouseInput => mouseInput;
-    public bool IsPressReload => isPressReload;
+    public Vector3 PointToLook      { get { return pointToLook; } }
+    public Vector3 Velocity         { get { return velocity; } }
+    public Vector3 NotRawVelocity   { get { return notRawVelocity; } }
 
-    public Vector3 LookDirection => throw new System.NotImplementedException();
+    public MouseInput[] MouseInput  => mouseInput;
+    public bool IsPressReload       => isPressReload;
+    public Vector3 LookDirection    => throw new System.NotImplementedException();
 
     // constuctor for input
     public AIInput(CharacterSettings settings, Transform objectToMove, MonoBehaviour myMonoBehaviour)

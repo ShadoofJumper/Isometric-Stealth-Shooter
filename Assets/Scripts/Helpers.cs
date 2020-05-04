@@ -22,4 +22,13 @@ public static class Helpers
         return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
     }
 
+    
+    public static Vector3 ClampMagnitudeCust(Vector3 v, float min, float max)
+    {
+        double dm = v.sqrMagnitude;
+        if (dm > (double)max * (double)max) return v.normalized * max;
+        else if (dm < (double)min * (double)min) return v.normalized * min;
+        return v;
+    }
+
 }

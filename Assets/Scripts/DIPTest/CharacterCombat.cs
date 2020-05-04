@@ -18,10 +18,10 @@ public class CharacterCombat
 
     private MonoBehaviour   _myMonoBehaviour;
     private ICharacterInput _input;
+    private DamageHit       lastHit;
 
-    //test
-    private DamageHit lastHit;
-
+    private bool isShootExtra   = false;
+    private bool isShootMain    = false;
 
     public CharacterCombat(ICharacterInput input, float health, Weapon weapon, GameObject character, MonoBehaviour myMonoBehaviour)
     {
@@ -69,45 +69,47 @@ public class CharacterCombat
         }
     }
 
+    private void ShootMain(MouseInput leftButton)
+    {
+        if (leftButton.press)
+        {
+            _weapon.LeftButtonHold();
+            if (_character.isPlayer)
+                UIController.instance.UpdateAmmoUI(_weapon.CurrentAmmoInStore, _weapon.CurrentAmmoAmmount);
+            if (_weapon.IsStoreEmpty && _weapon.CurrentAmmoAmmount > 0)
+                UIController.instance.ShowAmmoHint();
+        }
+
+        if (leftButton.down)
+            _charAnim.EnableAim();
+        if (leftButton.up)
+            _charAnim.DisableAim();
+    }
+
+    private void ShootExtra(MouseInput rightButton)
+    {
+        if (rightButton.press)
+            _weapon.RightButtonHold();
+
+        if (rightButton.down) {
+            _charAnim.EnableAim();
+            _weapon.RightButtonDown();
+        }
+
+        if (rightButton.up) {
+            _charAnim.DisableAim();
+            _weapon.RightButtonUp();
+        }
+    }
+
     // TO Do correct bad code call input shoot
     public void DoWaeponAction(MouseInput[] mouseButtonsState)
     {
-        if (_weapon != null)
-        {
-            // if click left button
-            if (mouseButtonsState[0].down)
-            {
-                bool isShootSucces =_weapon.LeftButtonShoot();
+        if (_weapon == null)
+            return;
 
-                // update after shoot
-                if (_character.isPlayer)
-                {
-                    UIController.instance.UpdateAmmoUI(_weapon.CurrentAmmoInStore, _weapon.CurrentAmmoAmmount);
-                }
-                // show hint if have ammo and not reload
-                if (_weapon.IsStoreEmpty && _weapon.CurrentAmmoAmmount > 0)
-                {
-                    UIController.instance.ShowAmmoHint();
-                }
-
-            }
-            else if (mouseButtonsState[1].down)
-            {
-                _charAnim.EnableAim();
-                _weapon.RightButtonDown();
-            }
-            else if (mouseButtonsState[1].press)
-            {
-                _weapon.RightButtonHold();
-            }
-            else if (mouseButtonsState[1].up)
-            {
-                _charAnim.DisableAim();
-                _weapon.RightButtonUp();
-            }
-        }
-
-
+        ShootMain(mouseButtonsState[0]);
+        ShootExtra(mouseButtonsState[1]);
     }
 
 
