@@ -1,17 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Animator))]
 public class CharacterAnimationController : MonoBehaviour
 {
-    [SerializeField] private Animator characterAnimator;
-    private List<Collider>  dollColliders = new List<Collider>();
-    private Collider        characterSpine;
-    [SerializeField] private CharacterIKMover characterIKMover;
-
-
-    private int aimEnableCount;
+    [SerializeField] private Animator           characterAnimator;
+    [SerializeField] private CharacterIKMover   characterIKMover;
+    private List<Collider> dollColliders = new List<Collider>();
+    private Collider    characterSpine;
+    private int         aimEnableCount;
+    private float       currentAimWeight;
+    private Coroutine increasAim;
+    private Coroutine decreasAim;
 
     private void Awake()
     {
@@ -38,25 +40,60 @@ public class CharacterAnimationController : MonoBehaviour
 
     // ------- aim controll -----
     // aim work as counter, in two button hit aim then aim will close if two button disable aim
-    public void EnableAim()
+    public void EnableAim(float enableTime = 0.0f, UnityAction delayFunk = null)
     {
         aimEnableCount += 1;
-        if(aimEnableCount == 1)
+        if (aimEnableCount == 1)
         {
-            characterAnimator.SetLayerWeight(2, 1.0f);
-            characterIKMover.UseLook = true;
+            if (enableTime == 0.0f)
+            {
+                characterAnimator.SetLayerWeight(2, 1.0f);
+                characterIKMover.PowerLookIK = 1.0f;
+                currentAimWeight = 1.0f;
+                return;
+            }
+            if (increasAim != null) StopCoroutine(increasAim);
+            if (decreasAim != null) StopCoroutine(decreasAim);
+            increasAim = StartCoroutine(ChangeAimWeight(currentAimWeight, 1.0f, enableTime, delayFunk));
+        }
+        else if(aimEnableCount > 1)
+        {
+            delayFunk.Invoke();
         }
     }
 
-    public void DisableAim()
+    public void DisableAim(float disableTime = 0.0f, UnityAction delayFunk = null)
     {
         aimEnableCount -= 1;
         if(aimEnableCount <= 0)
         {
-            characterAnimator.SetLayerWeight(2, 0.0f);
+            if (disableTime == 0.0f)
+            {
+                characterAnimator.SetLayerWeight(2, 0.0f);
+                characterIKMover.PowerLookIK = 0.0f;
+                currentAimWeight = 0.0f;
+                return;
+            }
+            if (increasAim != null) StopCoroutine(increasAim);
+            if (decreasAim != null) StopCoroutine(decreasAim);
+            decreasAim = StartCoroutine(ChangeAimWeight(currentAimWeight, 0.0f, disableTime, delayFunk));
             aimEnableCount = 0;
-            characterIKMover.UseLook = false;
         }
+    }
+
+    IEnumerator ChangeAimWeight(float from, float to, float time, UnityAction delayFunk)
+    {
+        float t = 0f;
+        while (t < 1.0f)
+        {
+            currentAimWeight = Mathf.Lerp(from, to, t);
+            t += Time.deltaTime * 1/time;
+            characterAnimator.SetLayerWeight(2, currentAimWeight);
+            characterIKMover.PowerLookIK = currentAimWeight;
+            yield return null;
+        }
+        if(delayFunk!=null)
+            delayFunk.Invoke();
     }
 
     // -------------------------- [RAGDOLL LOGIC] --------------------------

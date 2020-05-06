@@ -7,10 +7,8 @@ public class Bullet: MonoBehaviour
 {
     private float       _speedMove;
     private float       _damage = 0;
-    private Vector3     _velocity;
     private Rigidbody   _bulletRig;
     private float       delayDestroy = 3.0f;
-
     #region [Properties]
 
     public float SpeedMove {
@@ -18,11 +16,6 @@ public class Bullet: MonoBehaviour
         set {
             if (value > 1) { _speedMove = value; } else { _speedMove = 1; }
         }
-    }
-    public Vector3 Velocity
-    {
-        get { return _velocity; }
-        set { _velocity = value; }
     }
 
     public float Damage
@@ -39,8 +32,9 @@ public class Bullet: MonoBehaviour
 
     #endregion
 
-    // action that call delegate method when we destroy bullet
-    public Action<GameObject> OnDestroyBullet;
+    public Action<GameObject>   OnDestroyBullet;
+    public Action<ContactPoint> OnHitBullet;
+
 
     private void Start()
     {
@@ -77,22 +71,17 @@ public class Bullet: MonoBehaviour
     // move bullet in one fixed frame
     public void MoveBullet()
     {
-        _bulletRig.MovePosition(_bulletRig.position + _velocity * _speedMove * Time.fixedDeltaTime);
+        _bulletRig.MovePosition(_bulletRig.position + transform.forward * _speedMove * Time.fixedDeltaTime);
     }
 
     public virtual void BulletCollide(Collision collision)
     {
         BulletDestroy();
-
-        // get collide object
+        OnHitBullet(collision.contacts[0]);
         GameObject objectCollide    = collision.collider.gameObject;
-        // get component if exist
         Character character         = objectCollide.GetComponent<Character>();
-        // if collide character then call take damage
         if (character != null)
-        {
-            character.characterCombat.TakeDamage(_damage, collision.contacts[0], _velocity);
-        }
+            character.characterCombat.TakeDamage(_damage, collision.contacts[0], transform.forward);
     }
 
     public virtual void BulletDestroy()

@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b574d924d6199a94bb4fb6ff947c47a5, type: 3}
   m_Name: WeaponGun
   m_EditorClassIdentifier: 
+  weaponName: GUN
   bulletSpeed: 40
-  shootDelay: 0
+  fireRate: 0
   reload: 0
   damage: 50
   ammoAmountInStore: 6
@@ -21,3 +22,5 @@ MonoBehaviour:
   ammoStoreMax: 8
   weaponModel: {fileID: 1626789433341156793, guid: 4b9e63baef70e444db9dfe027b1ef028,
     type: 3}
+  weaponRightHandPos: {x: 0, y: 0, z: 0}
+  weaponRightHandRot: {x: 0, y: 0, z: 0}

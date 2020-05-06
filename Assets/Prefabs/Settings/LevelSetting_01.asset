@@ -17,5 +17,4 @@ MonoBehaviour:
   startMissionsTasks:
   - MISSION_MAIN
   startMissionsIsSilance: 01
-  playerSpawnPoint: {fileID: 4933492434441392120, guid: 7690c4ee64bcb404fadbb2fc573395cf,
-    type: 3}
+  playerSpawnPoint: {fileID: 0}

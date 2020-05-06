@@ -8,23 +8,24 @@ public class CharacterIKMover : MonoBehaviour
 
     ///  ---------------- For loot at target
     [Range(0, 1)]
-    public float bodyWeight;
+    [SerializeField] private float bodyWeight;
     [Range(0, 1)]
-    public float headWeight;
+    [SerializeField] private float headWeight;
     [Range(0, 1)]
-    public float eyesWeight;
+    [SerializeField] private float eyesWeight;
     [Range(0, 1)]
-    public float lookClamp;
+    [SerializeField] private float lookClamp;
     [Range(0, 1)]
-    public float powerLookIK = 1.0f;
+    [SerializeField] private float powerLookIK = 0.0f;
     //  use look on point
     public bool useLook = false;
     private Character _character;
 
-    public Vector3 test;
+    public Vector3 lookOffset;
 
 
-    public bool UseLook { get { return useLook; } set { useLook = value; } }
+    public bool UseLook         { get { return useLook; }       set { useLook = value; } }
+    public float PowerLookIK    { get { return powerLookIK; }   set { powerLookIK = value; } }
 
 
     // Start is called before the first frame update
@@ -60,7 +61,7 @@ public class CharacterIKMover : MonoBehaviour
             return;
 
         Vector3 forwardLook     = _character.gameObject.transform.forward;
-        forwardLook             = Quaternion.Euler(test) * forwardLook;
+        forwardLook             = Quaternion.Euler(lookOffset) * forwardLook;
         Vector3 lookPosition    = _character.gameObject.transform.position + forwardLook * 5;
         lookPosition.y = 2.5f;
 

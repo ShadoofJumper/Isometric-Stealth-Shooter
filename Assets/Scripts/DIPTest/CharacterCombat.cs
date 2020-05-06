@@ -22,6 +22,7 @@ public class CharacterCombat
 
     private bool isShootExtra   = false;
     private bool isShootMain    = false;
+    private float weaponGetSpeed = 0.3f;
 
     public CharacterCombat(ICharacterInput input, float health, Weapon weapon, GameObject character, MonoBehaviour myMonoBehaviour)
     {
@@ -71,7 +72,15 @@ public class CharacterCombat
 
     private void ShootMain(MouseInput leftButton)
     {
-        if (leftButton.press)
+        if (leftButton.down) {
+            _charAnim.EnableAim(weaponGetSpeed, delegate { isShootMain = true; });
+        }
+        if (leftButton.up) {
+            _charAnim.DisableAim(weaponGetSpeed);
+            isShootMain = false;
+        }
+
+        if (leftButton.press && isShootMain)
         {
             _weapon.LeftButtonHold();
             if (_character.isPlayer)
@@ -79,28 +88,31 @@ public class CharacterCombat
             if (_weapon.IsStoreEmpty && _weapon.CurrentAmmoAmmount > 0)
                 UIController.instance.ShowAmmoHint();
         }
-
-        if (leftButton.down)
-            _charAnim.EnableAim();
-        if (leftButton.up)
-            _charAnim.DisableAim();
     }
+
+
 
     private void ShootExtra(MouseInput rightButton)
     {
-        if (rightButton.press)
-            _weapon.RightButtonHold();
 
-        if (rightButton.down) {
-            _charAnim.EnableAim();
-            _weapon.RightButtonDown();
+        if (rightButton.down)
+        {
+            _charAnim.EnableAim(weaponGetSpeed, delegate { _weapon.RightButtonDown(); isShootExtra = true; });
         }
 
-        if (rightButton.up) {
-            _charAnim.DisableAim();
+        if (rightButton.up)
+        {
+            _charAnim.DisableAim(weaponGetSpeed);
             _weapon.RightButtonUp();
+            isShootExtra = false;
+        }
+
+        if (rightButton.press && isShootExtra)
+        {
+            _weapon.RightButtonHold();
         }
     }
+
 
     // TO Do correct bad code call input shoot
     public void DoWaeponAction(MouseInput[] mouseButtonsState)
@@ -191,7 +203,7 @@ public class CharacterCombat
     {
         // enable rigidbody gravity
         _characterRigidbody.useGravity      = true;
-        _characterRigidbody.freezeRotation = false;
+        _characterRigidbody.freezeRotation  = false;
         _character.GetComponent<Collider>().enabled = false;
         _charAnim.EnableRagdoll();
         yield return 0;

@@ -111,8 +111,6 @@ public class GameManager : MonoBehaviour
     public void StartLevel(int levelId)
     {
         SceneController.instance.EnemySettings = levelSetting.EnemySettings;
-        SceneController.instance.StartPositionPlayer = levelSetting.PlayerSpawnPoint;
-
         SceneController.instance.SpawnPlayer();
         SceneController.instance.SpawnAllEnemys();
 
@@ -133,7 +131,8 @@ public class GameManager : MonoBehaviour
         // For main mission use camera
         //cameraController.ShowPoint(mainMissionMarker, 2.0f, true, 1.0f, 3.0f, delegate { player.ResumeCharacter(); });
 
-
+        //test
+        InventoryStubManager.instance.Additem("M107");
     }
 
     public void RestartLevel()

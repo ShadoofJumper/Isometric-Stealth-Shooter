@@ -9,8 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5873744618757481964}
-  - component: {fileID: 5873744618757481965}
-  - component: {fileID: 5873744618757481966}
   - component: {fileID: 5873744618757481955}
   - component: {fileID: 5873744618757481961}
   m_Layer: 2
@@ -35,52 +33,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &5873744618757481965
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5873744618757481962}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &5873744618757481966
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5873744618757481962}
-  m_Enabled: 0
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
 --- !u!114 &5873744618757481955
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,6 +47,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: 8e7ead3e28237b944a5b9560956ea57e, type: 2}
   bulletOrigin: {fileID: 8259761841207500806, guid: cc79f49e6db46404ebd30962f829d687,
+    type: 3}
+  bulletParticalOrigin: {fileID: 2147503907107930781, guid: 922233b3c8c35e0419ad38b73277f7aa,
+    type: 3}
+  muzzleParticalOrigin: {fileID: 1316913870856694147, guid: dbb721dcf6c7bfa4f9e3a42d32cdf974,
+    type: 3}
+  hitParticalOrigin: {fileID: 8360416862147299547, guid: a9701cb7f98ad22468d0a01fd4165468,
     type: 3}
   laserWidth: 0.05
   laserDistance: 99

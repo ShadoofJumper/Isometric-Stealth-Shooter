@@ -18,27 +18,43 @@ public class InventoryStubManager : MonoBehaviour
         {
             Debug.Log("Try create another instance of game manager!");
         }
-
+        OnAwake();
     }
     #endregion
 
     [SerializeField] private GameObject weaponPrefab;
     [SerializeField] private Transform  handToMove;
+    [SerializeField] private List<WeaponSettings> wSettings;
 
     public List<WeaponSettings> items = new List<WeaponSettings>();
     private CharacterIKMover playerIKMover;
     private Character player;
-    private void Start()
+
+    private void OnAwake()
     {
         player = SceneController.instance.player;
         GameObject playerObject = player.gameObject;
         playerIKMover = playerObject.GetComponentInChildren<CharacterIKMover>();
     }
 
-    public void Additem(WeaponSettings weaponSettings)
+    private WeaponSettings GetGunSetting(string name)
     {
-        items.Add(weaponSettings);
-        Equip(weaponSettings);
+        foreach (WeaponSettings ws in wSettings)
+        {
+            if (ws.WeaponName == name)
+                return ws;
+        }
+        return null;
+    }
+
+    public void Additem(string weaponName)
+    {
+        WeaponSettings wSettings = GetGunSetting(weaponName);
+        if (items.Count == 0 && wSettings!= null)
+        {
+            items.Add(wSettings);
+            Equip(wSettings);
+        }
     }
 
     public void Equip(WeaponSettings weaponSettings)

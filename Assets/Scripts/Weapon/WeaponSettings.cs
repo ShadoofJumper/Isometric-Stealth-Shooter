@@ -3,6 +3,7 @@
 [CreateAssetMenu(menuName = "Weapon/Settings", fileName = "Weapon parametrs")]
 public class WeaponSettings : ScriptableObject
 {
+    [SerializeField] private string weaponName;
     [SerializeField] private float bulletSpeed;
     [SerializeField] private float fireRate;
     [SerializeField] private float reload;
@@ -17,6 +18,7 @@ public class WeaponSettings : ScriptableObject
     [SerializeField] private Vector3 weaponRightHandPos;
     [SerializeField] private Vector3 weaponRightHandRot;
 
+    public string WeaponName { get { return weaponName; } }
     public float Speed      { get { return bulletSpeed; }}
     public float FireRate { get { return fireRate; }}
     public float Reload     { get { return reload; } }

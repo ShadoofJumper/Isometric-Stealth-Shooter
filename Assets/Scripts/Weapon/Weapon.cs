@@ -5,7 +5,10 @@ using UnityEngine;
 public class Weapon : MonoBehaviour
 {
     [SerializeField] private WeaponSettings settings;
-    [SerializeField] private GameObject     bulletOrigin;
+    [SerializeField] private GameObject bulletOrigin;
+    [SerializeField] private GameObject bulletParticalOrigin;
+    [SerializeField] private GameObject muzzleParticalOrigin;
+    [SerializeField] private GameObject hitParticalOrigin;
 
     [Header("Parameters for laser")]
     [SerializeField] private float          laserWidth;
@@ -19,7 +22,7 @@ public class Weapon : MonoBehaviour
     private int         ammoAmountInStore;
     private int         ammoAmount;
     private Transform   shootSpot;
-    private Vector3     shootDirection;
+    //private Vector3     shootDirection;
     private float       timeToFire;
 
     public bool IsStoreEmpty        => isStoreEmpty;
@@ -35,7 +38,7 @@ public class Weapon : MonoBehaviour
     private Dictionary<GameObject, Bullet> bulletDict = new Dictionary<GameObject, Bullet>();
 
     //weapom character
-    Character   weaponChar;
+    Character weaponChar;
     ICharacterInput inputChar;
 
     private void Awake()
@@ -45,7 +48,7 @@ public class Weapon : MonoBehaviour
         ammoAmount          = settings.AmmoAmount;
         //set default
         shootSpot           = transform;
-        shootDirection      = transform.forward;
+        //shootDirection      = transform.forward;
 
         if (ammoAmountInStore > 0)
             isStoreEmpty = false;
@@ -59,20 +62,20 @@ public class Weapon : MonoBehaviour
         this.inputChar      = weaponChar.CharacterInput;
     }
 
-    private Vector3 CalculateShootDirection(Character weaponChar)
-    {
-        if (!weaponChar.isPlayer)
-            return inputChar.LookDirection;
+    //private Vector3 CalculateShootDirection(Character weaponChar)
+    //{
+    //    if (!weaponChar.isPlayer)
+    //        return inputChar.LookDirection;
 
-        return Vector3.Normalize(inputChar.PointToLook - shootSpot.position);
-    }
+    //    return Vector3.Normalize(inputChar.PointToLook - shootSpot.position);
+    //}
 
 
     //TEST
     private void Update()
     {
-        if(weaponChar!=null)
-            shootDirection = CalculateShootDirection(weaponChar);
+        //if(weaponChar!=null)
+        //    shootDirection = CalculateShootDirection(weaponChar);
     }
 
 
@@ -125,11 +128,11 @@ public class Weapon : MonoBehaviour
     }
 
 
-
     public void ShootExtra()
     {
+        laserLineRender.positionCount = 2;
         Vector3 startPoint = shootSpot.position;
-        Vector3 finisPoint = shootSpot.position + shootDirection * laserDistance;
+        Vector3 finisPoint = shootSpot.position + inputChar.LookDirection * laserDistance;
 
         laserLineRender.SetPosition(0, startPoint);
         laserLineRender.SetPosition(1, finisPoint);
@@ -149,19 +152,22 @@ public class Weapon : MonoBehaviour
         // create or take from pull
         Bullet bullet       = bulletPool.Count != 0 ? GetBullet() : CreateBullet();
         bullet.SpeedMove    = settings.Speed;
-        bullet.Velocity     = shootDirection;
+        bullet.transform.rotation = Quaternion.LookRotation(inputChar.LookDirection, Vector3.up);
         bullet.StartBulletMove();
     }
 
     private Bullet CreateBullet()
     {
-        GameObject bulletObject = Instantiate(bulletOrigin, shootSpot.position, Quaternion.identity);
-        // set parent for groupe
+        ShowMuzzle();
+        GameObject bulletObject     = Instantiate(bulletOrigin,         shootSpot.position, Quaternion.identity);
+        GameObject bulletPartical   = Instantiate(bulletParticalOrigin, shootSpot.position, Quaternion.identity);
+        bulletPartical.transform.SetParent(bulletObject.transform);
         bulletObject.transform.SetParent(bulletParent.transform);
         // program add script to bullet, in future script can be change depend on bullet type
         Bullet bullet           = bulletObject.AddComponent<Bullet>();
         bullet.Damage           = settings.Damage;
         bullet.OnDestroyBullet  = OnBulletDestroy;
+        bullet.OnHitBullet      = OnBulletHit;
         bullet.name             = "Bullet_" + bulletPoolCounter;
         bulletDict.Add(bulletObject, bullet);
         bulletPoolCounter++;
@@ -172,18 +178,44 @@ public class Weapon : MonoBehaviour
     {
         // take from start of pool
         GameObject bulletObject = bulletPool.Dequeue();
+        bulletObject.GetComponentInChildren<TrailRenderer>().Clear();
+        ShowMuzzle();
         // get bullet comp
         Bullet bullet = bulletDict[bulletObject];
         bulletObject.SetActive(true);
         bulletObject.transform.position = shootSpot.position;
-
         return bullet;
     }
+
+    private void ShowMuzzle()
+    {
+        GameObject muzzlePartical = Instantiate(muzzleParticalOrigin, shootSpot.position, Quaternion.identity);
+        muzzlePartical.transform.SetParent(shootSpot.transform);
+        muzzlePartical.transform.rotation = Quaternion.LookRotation(inputChar.LookDirection, Vector3.up);
+        DestroyPSAfterEnd(muzzlePartical);
+    }
+
+    private void DestroyPSAfterEnd(GameObject particalObject)
+    {
+        ParticleSystem ps = particalObject.GetComponent<ParticleSystem>();
+        if (ps!=null)
+        {
+            Destroy(particalObject, ps.main.duration);
+        }
+        else
+        {
+            ParticleSystem psChild = particalObject.GetComponentInChildren<ParticleSystem>();
+            Destroy(particalObject, psChild.main.duration);
+        }
+    }
+
 
     public virtual void RightButtonDown()
     {
         // turn on laser
         laserLineRender.enabled = true;
+        laserLineRender.positionCount = 0;
+
     }
 
     public virtual void RightButtonUp()
@@ -216,8 +248,6 @@ public class Weapon : MonoBehaviour
         }
     }
 
-
-
     //call when bullet destroy
     private void OnBulletDestroy(GameObject destroyBulletObject)
     {
@@ -230,6 +260,14 @@ public class Weapon : MonoBehaviour
         destroyBullet.SpeedMove = 0;
         // add to pool when complete
         bulletPool.Enqueue(destroyBulletObject);
+    }
+
+    private void OnBulletHit(ContactPoint contact)
+    {
+        GameObject hitPartical = Instantiate(hitParticalOrigin, contact.point, Quaternion.identity);
+        hitPartical.transform.parent = bulletParent.transform;
+        Quaternion rot = Quaternion.FromToRotation(Vector3.up, contact.normal);
+        DestroyPSAfterEnd(hitPartical);
     }
 
 

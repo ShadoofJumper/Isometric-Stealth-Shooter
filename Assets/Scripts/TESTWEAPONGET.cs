@@ -4,13 +4,12 @@ using UnityEngine;
 
 public class TESTWEAPONGET : MonoBehaviour
 {
-    [SerializeField] private WeaponSettings settings;
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Player")
         {
-            InventoryStubManager.instance.Additem(settings);
+            InventoryStubManager.instance.Additem("M107");
         }
     }
 }
