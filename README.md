@@ -1,2 +1,2 @@
-# TestingNavMesh
- Testing some futures
+# Isometric Stealth Shooter
+ Solo develop my first big project on unity.
