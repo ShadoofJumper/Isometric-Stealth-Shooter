@@ -6,9 +6,9 @@ using UnityEngine.AI;
 public class CharacterCombat
 {
     private float           _health;
-    private int             dieImpulsePower = 2;
+    private int             dieImpulsePower = 200;
     private float           dieFallDelay    = 1.0f;
-    private Weapon          _weapon;
+    private WeaponShooter   _weaponShooter;
     private Character       _character;
     private NavMeshAgent    _agent;
     private GameObject      _characterObject;
@@ -24,14 +24,12 @@ public class CharacterCombat
     private bool isShootMain    = false;
     private float weaponGetSpeed = 0.3f;
 
-    public CharacterCombat(ICharacterInput input, float health, Weapon weapon, GameObject character, MonoBehaviour myMonoBehaviour)
+    public CharacterCombat(ICharacterInput input, float health, GameObject character, MonoBehaviour myMonoBehaviour)
     {
         _health             = health;
         _input              = input;
-        _weapon             = weapon;
         _characterObject    = character;
         _myMonoBehaviour    = myMonoBehaviour;
-
         _character          = character.GetComponent<Character>();
         _characterField     = character.GetComponent<FieldOfView>();
         _characterRigidbody = character.GetComponent<Rigidbody>();
@@ -42,18 +40,18 @@ public class CharacterCombat
         {
             UIController.instance.UpdateHealthUI(_health);
 
-            if (_weapon!= null)
+            if (_weaponShooter != null)
             {
                 // test
-                UIController.instance.UpdateAmmoUI(_weapon.CurrentAmmoInStore, _weapon.CurrentAmmoAmmount);
+                UIController.instance.UpdateAmmoUI(_weaponShooter.CurrentAmmoInStore, _weaponShooter.CurrentAmmoAmmount);
             }
         }
 
     }
 
-    public void UpdateCharacterStatus(Weapon weapon)
+    public void UpdateCharacterStatus(WeaponShooter weaponShooter)
     {
-        _weapon = weapon;
+        _weaponShooter = weaponShooter;
     }
 
     public void TakeDamage(float damage, ContactPoint hitPoint = new ContactPoint(), Vector3 hitDirection = new Vector3())
@@ -80,12 +78,12 @@ public class CharacterCombat
             isShootMain = false;
         }
 
-        if (leftButton.press && isShootMain)
+        if (leftButton.press && (isShootMain || isShootExtra))
         {
-            _weapon.LeftButtonHold();
+            _weaponShooter.LeftButtonHold();
             if (_character.isPlayer)
-                UIController.instance.UpdateAmmoUI(_weapon.CurrentAmmoInStore, _weapon.CurrentAmmoAmmount);
-            if (_weapon.IsStoreEmpty && _weapon.CurrentAmmoAmmount > 0)
+                UIController.instance.UpdateAmmoUI(_weaponShooter.CurrentAmmoInStore, _weaponShooter.CurrentAmmoAmmount);
+            if (_weaponShooter.IsStoreEmpty && _weaponShooter.CurrentAmmoAmmount > 0)
                 UIController.instance.ShowAmmoHint();
         }
     }
@@ -97,19 +95,19 @@ public class CharacterCombat
 
         if (rightButton.down)
         {
-            _charAnim.EnableAim(weaponGetSpeed, delegate { _weapon.RightButtonDown(); isShootExtra = true; });
+            _charAnim.EnableAim(weaponGetSpeed, delegate { _weaponShooter.RightButtonDown(); isShootExtra = true; });
         }
 
         if (rightButton.up)
         {
             _charAnim.DisableAim(weaponGetSpeed);
-            _weapon.RightButtonUp();
+            _weaponShooter.RightButtonUp();
             isShootExtra = false;
         }
 
         if (rightButton.press && isShootExtra)
         {
-            _weapon.RightButtonHold();
+            _weaponShooter.RightButtonHold();
         }
     }
 
@@ -117,7 +115,7 @@ public class CharacterCombat
     // TO Do correct bad code call input shoot
     public void DoWaeponAction(MouseInput[] mouseButtonsState)
     {
-        if (_weapon == null)
+        if (_weaponShooter == null)
             return;
 
         ShootMain(mouseButtonsState[0]);
@@ -165,19 +163,19 @@ public class CharacterCombat
             Die();
         }
 
-        if (_weapon != null)
+        if (_weaponShooter != null)
         {
             // call action left
             DoWaeponAction(_input.MouseInput);
 
             if (_input.IsPressReload)
             {
-                _weapon.Reload();
+                _weaponShooter.Reload();
                 UIController.instance.HideAmmoHint();
 
                 if (_character.isPlayer)
                 {
-                    UIController.instance.UpdateAmmoUI(_weapon.CurrentAmmoInStore, _weapon.CurrentAmmoAmmount);
+                    UIController.instance.UpdateAmmoUI(_weaponShooter.CurrentAmmoInStore, _weaponShooter.CurrentAmmoAmmount);
                 }
             }
         }

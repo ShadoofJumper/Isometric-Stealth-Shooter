@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b574d924d6199a94bb4fb6ff947c47a5, type: 3}
   m_Name: WeaponM107
   m_EditorClassIdentifier: 
-  weaponName: M107
+  name: M107
+  icon: {fileID: 21300000, guid: 679b765800666cb4f882298892c05e96, type: 3}
+  weaponPlaceNumber: 0
   bulletSpeed: 40
-  fireRate: 40
+  fireRate: 20
   reload: 0
   damage: 100
   ammoAmountInStore: 60
@@ -22,5 +24,3 @@ MonoBehaviour:
   ammoStoreMax: 108
   weaponModel: {fileID: 8983630136207469107, guid: 630646d84d49cbe479de75d636739e1d,
     type: 3}
-  weaponRightHandPos: {x: 0.128, y: 1.774, z: 0.5}
-  weaponRightHandRot: {x: -6.5, y: -38, z: -90}

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5873744618757481955}
   - component: {fileID: 5873744618757481961}
   m_Layer: 2
-  m_Name: WeaponPrefab
+  m_Name: M1912Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc5d93759944f194f8af81d2ca1a0275, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settings: {fileID: 11400000, guid: 8e7ead3e28237b944a5b9560956ea57e, type: 2}
+  settings: {fileID: 11400000, guid: eed578db8385552449ff0cd8febc8642, type: 2}
   bulletOrigin: {fileID: 8259761841207500806, guid: cc79f49e6db46404ebd30962f829d687,
     type: 3}
   bulletParticalOrigin: {fileID: 2147503907107930781, guid: 922233b3c8c35e0419ad38b73277f7aa,

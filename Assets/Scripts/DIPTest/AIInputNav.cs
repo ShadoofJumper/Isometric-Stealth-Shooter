@@ -52,7 +52,9 @@ public class AIInputNav : ICharacterInput
 
         //start initialization
         GetWayPointsFromPath(_path);
-        poinToMove          = _wayPoints[currentPointToMove].position;
+        if (_wayPoints.Count > 1)
+            poinToMove = _wayPoints[currentPointToMove].position;
+
         doorMask            = LayerMask.GetMask("Door");
         distanceInteract    = 2.0f;
         angleInteract       = 30.0f;
@@ -84,7 +86,7 @@ public class AIInputNav : ICharacterInput
 
         CheckInteractWithObject();
         // if get to destination and not on rotate pause already
-        if (IsCharacterGetNextPoint() && !rotatePause)
+        if (_wayPoints.Count != 0 && IsCharacterGetNextPoint() && !rotatePause)
         {
             float pauseDelay = _wayPoints[currentPointToMove].pauseDelay;
 

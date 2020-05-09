@@ -86,10 +86,11 @@ public class PitchVolumeField : FieldModVisualization
 
     private void LateUpdate()
     {
+        if (_character.characterMover == null)
+            return;
         // dependence of volume on speed
         // speed devide on medium speed and discard one
         float volume    = volumeRange + volumePower;
-
         UpdateVolumeParams(_character.characterMover.SpeedId);
 
         // get all targets that hear volume

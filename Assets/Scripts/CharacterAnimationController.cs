@@ -56,10 +56,10 @@ public class CharacterAnimationController : MonoBehaviour
             if (decreasAim != null) StopCoroutine(decreasAim);
             increasAim = StartCoroutine(ChangeAimWeight(currentAimWeight, 1.0f, enableTime, delayFunk));
         }
-        else if(aimEnableCount > 1)
-        {
-            delayFunk.Invoke();
-        }
+        //else if(aimEnableCount > 1)
+        //{
+        //    delayFunk.Invoke();
+        //}
     }
 
     public void DisableAim(float disableTime = 0.0f, UnityAction delayFunk = null)
@@ -138,8 +138,12 @@ public class CharacterAnimationController : MonoBehaviour
         Vector3 impulseVelocity = dir * power;
 
         RaycastHit hit;
-        //Debug.DrawLine(origin, origin + dir * 2, Color.green);
-        if (Physics.Raycast(origin, dir, out hit, Mathf.Infinity)) {
+        //raycast character and targets
+        int layerMaskCharacter  = 1 << 8;
+        int layerMaskTarget     = 1 << 9;
+        int finalMask           = layerMaskCharacter | layerMaskTarget;
+        Debug.DrawLine(origin, origin + dir * 2, Color.green);
+        if (Physics.Raycast(origin, dir, out hit, Mathf.Infinity, finalMask)) {
             hit.rigidbody.AddForceAtPosition(impulseVelocity, hit.point, ForceMode.Impulse);
         } else {
             characterSpine.attachedRigidbody.AddForce(impulseVelocity, ForceMode.Impulse);

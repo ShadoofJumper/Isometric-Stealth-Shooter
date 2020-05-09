@@ -11,8 +11,9 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float moveSmoothens = 5.0f;
     //[SerializeField] private float moveLookSpeed = 5.0f;
     //[SerializeField] private float moveLookSpeedBuff = 10.0f;
-    [SerializeField] private float rotateSmoothens  = 5.0f;
-    [SerializeField] private float rangeLook        = 1.0f;
+    [SerializeField] private float rotateSmoothens      = 5.0f;
+    [SerializeField] private float rangeLook            = 1.0f;
+    [SerializeField] private float rangeLookGlobal      = 1.0f;
     private Vector3 startOffsetCamera;
     // flag for translate camera
     private bool isCameraControlled = false;
@@ -49,7 +50,8 @@ public class CameraController : MonoBehaviour
     void FixedUpdate()
     {
         // return if player on pause
-        if (SceneController.instance.player.isOnPause || isCameraControlled)
+        if (SceneController.instance!= null 
+        && SceneController.instance.player.isOnPause || isCameraControlled)
             return;
         ////check is gloval look
         isGlobalLook = Input.GetKey(KeyCode.Space);
@@ -64,7 +66,9 @@ public class CameraController : MonoBehaviour
     {
         // rotate pranet
         Quaternion newRotation = Quaternion.Euler(0, 0, (target.eulerAngles.y + 45) * -1);//
-        Quaternion newCameraAngle = Quaternion.Lerp(cameraRotateParent.localRotation, newRotation, rotateSmoothens * Time.fixedDeltaTime);
+        Quaternion newCameraAngle = newRotation;
+        if (!isGlobalLook)
+            newCameraAngle = Quaternion.Lerp(cameraRotateParent.localRotation, newRotation, rotateSmoothens * Time.fixedDeltaTime);
 
         cameraRotateParent.localRotation = newCameraAngle;
         transform.localRotation = Quaternion.Inverse(newCameraAngle);
@@ -73,16 +77,16 @@ public class CameraController : MonoBehaviour
     private void MoveCamera()
     {
         // look direction
-        Vector3 cameraMouseOffset = Vector3.zero;
+        Vector3 cameraMouseOffset = new Vector3(0, rangeLook, 0); ;
 
         //if global look
         if (isGlobalLook)
         {
-            cameraMouseOffset = new Vector3(0, rangeLook, 0);
+            cameraMouseOffset = new Vector3(0, rangeLookGlobal, 0);
         }
 
         // set camera offset
-        transform.localPosition = Vector3.Lerp(transform.localPosition, cameraMouseOffset, moveSmoothens * Time.fixedDeltaTime); ;
+        transform.localPosition = Vector3.Lerp(transform.localPosition, cameraMouseOffset, moveSmoothens * Time.fixedDeltaTime);
 
 
         //// move camera to player position + mouse offset for global look

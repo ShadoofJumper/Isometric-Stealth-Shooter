@@ -24,6 +24,12 @@ public class GameManager : MonoBehaviour
         
     }
     #endregion
+
+    //FOR TEST
+    [SerializeField] private Weapon weaponMain;
+    [SerializeField] private Weapon weaponSecond;
+    [SerializeField] private Weapon weaponExtra;
+
     [SerializeField] private Texture2D cursorAim;
     [SerializeField] private NavMeshSurface sceneNavMeshSurface;
     [SerializeField] private CameraController cameraController;
@@ -132,7 +138,11 @@ public class GameManager : MonoBehaviour
         //cameraController.ShowPoint(mainMissionMarker, 2.0f, true, 1.0f, 3.0f, delegate { player.ResumeCharacter(); });
 
         //test
-        InventoryStubManager.instance.Additem("M107");
+        //SceneController.instance.playerInventory.AddWeapon(weaponMain);
+        //SceneController.instance.playerInventory.AddWeapon(weaponSecond);
+        //SceneController.instance.playerInventory.AddWeapon(weaponExtra);
+        SceneController.instance.playerInventory.AddItem(weaponMain);
+        Debug.Log($"Weapon test: {weaponMain.WeaponSettings.Name}");
     }
 
     public void RestartLevel()

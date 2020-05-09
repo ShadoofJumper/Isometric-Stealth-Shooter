@@ -41,7 +41,7 @@ public class InventoryStubManager : MonoBehaviour
     {
         foreach (WeaponSettings ws in wSettings)
         {
-            if (ws.WeaponName == name)
+            if (ws.Name == name)
                 return ws;
         }
         return null;
@@ -69,18 +69,9 @@ public class InventoryStubManager : MonoBehaviour
         GameObject weaponModel  = Instantiate(weaponSettings.WeaponModel, weaponMain.transform);
         Weapon weaponComp       = weaponMain.GetComponent<Weapon>();
         weaponMain.name         = "Weapon";
-        weaponComp.WeaponInitialized(player, weaponSettings, weaponModel.transform.GetChild(1));
-
-        SimpleTransform rightHandSpot   = new SimpleTransform(weaponSettings.RightHandSpotPos, Quaternion.Euler(weaponSettings.RightHandSpotRot));
-        Transform leftHandSpotTr        = weaponModel.transform.GetChild(0);
-        SimpleTransform leftHandSpot    = new SimpleTransform(leftHandSpotTr.position, leftHandSpotTr.rotation);
-
+        //weaponComp.WeaponInitialized(player, weaponSettings, weaponModel.transform.GetChild(1));
         // add weapon to character
-        player.CharacterWeapon = weaponComp;
-
-        // update player hands position on weapon
-        playerIKMover.UpdateWeaponHandSpots(leftHandSpotTr, rightHandSpot);
-
+        //player.CharacterWeapon = weaponComp;
 
         return weaponComp;
     }

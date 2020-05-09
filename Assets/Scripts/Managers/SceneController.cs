@@ -11,6 +11,7 @@ public class SceneController : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log("Awake SceneController");
         if (instance == null)
         {
             instance = this;
@@ -26,23 +27,18 @@ public class SceneController : MonoBehaviour
     // enemys settings
     private List<CharacterSettings> enemySettings;
 
-    // target parent
-    [SerializeField] private GameObject targetFolder;
     // enemy origin
     [SerializeField] private Character enemyOrigin;
     // character params
     public Character player;
+    public CharacterInventory playerInventory;
     [SerializeField] private CharacterSettings playerSettings;
     [SerializeField] private Transform startPositionPlayer;
-    // enemys list
     public List<Character> Enemys = new List<Character>();
-    // all characters dict, for state all getcomponent info
     public Dictionary<Transform, Character> charactersOnScene = new Dictionary<Transform, Character>();
-    // all cameras dict, for state all getcomponent info
     public Dictionary<Transform, LevelCamera> camerasOnScene = new Dictionary<Transform, LevelCamera>();
-    // doors parent
     [SerializeField] private GameObject doorsParent;
-
+    [SerializeField] private GameObject targetFolder;
 
     // propertys
     public List<CharacterSettings> EnemySettings    { get { return enemySettings; }         set { enemySettings         = value; } }
@@ -62,6 +58,12 @@ public class SceneController : MonoBehaviour
 
     private Character SpawnEnemy(int enemyId)
     {
+        if (!targetFolder.activeSelf)
+        {
+            Debug.Log("No target folder");
+            return null;
+        }
+
         if (enemySettings == null)
         {
             Debug.Log("No enemy settings in scene controller!");

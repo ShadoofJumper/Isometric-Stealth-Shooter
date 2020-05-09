@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+[RequireComponent(typeof(CharacterInventory))]
 [RequireComponent(typeof(Rigidbody))]
 public class Character : MonoBehaviour
 {
-
     [SerializeField] private CharacterSettings settings;
     private ICharacterInput input;
     public  ICharacterMover characterMover;
-    public Weapon weapon;
+    //public Weapon weapon;
     public bool isAlive     = false;
     public bool isOnPause   = false;
     public bool isPlayer;
@@ -18,15 +18,15 @@ public class Character : MonoBehaviour
     private CharacterAnimationController charAnim;
     public ICharacterInput CharacterInput   => input;
     public CharacterSettings Settings       => settings;
-    public Weapon CharacterWeapon {
-        get {
-            return weapon;
-        }
-        set {
-            weapon = value;
-            characterCombat.UpdateCharacterStatus(value);
-        }
-    }
+    //public Weapon CharacterWeapon {
+    //    get {
+    //        return weapon;
+    //    }
+    //    set {
+    //        weapon = value;
+    //        characterCombat.UpdateCharacterStatus(value);
+    //    }
+    //}
 
     private void Start()
     {
@@ -36,7 +36,8 @@ public class Character : MonoBehaviour
 
     private void OnDestroy()
     {
-        SceneController.instance.charactersOnScene.Remove(transform);
+        if(SceneController.instance!=null)
+            SceneController.instance.charactersOnScene.Remove(transform);
     }
 
     public void InitializeCharacter(CharacterSettings settings)
@@ -50,7 +51,7 @@ public class Character : MonoBehaviour
         //create mover
         characterMover      = !isPlayer ? new AIMover(input, gameObject, settings) as ICharacterMover : new PlayerMover(input, transform, settings);
         //create character combat
-        characterCombat     = new CharacterCombat(input, settings.Health, weapon, gameObject, this);
+        characterCombat     = new CharacterCombat(input, settings.Health, gameObject, this);
         charAnim            = gameObject.GetComponentInChildren<CharacterAnimationController>();
     }
 
@@ -69,6 +70,9 @@ public class Character : MonoBehaviour
     {
         if (settings.IsAi && isAlive)
         {
+            if (settings.Path.transform.childCount == 0)
+                return;
+
             Vector3 startPosition = settings.Path.transform.GetChild(0).position;
             Vector3 previosPosition = startPosition;
 
@@ -105,7 +109,7 @@ public class Character : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isAlive && !isOnPause)
+        if (characterMover!=null && isAlive && !isOnPause)
         {
             //move character
             characterMover.Move();
@@ -117,7 +121,7 @@ public class Character : MonoBehaviour
 
     private void Update()
     {
-        if (isAlive && !isOnPause)
+        if (characterMover != null && isAlive && !isOnPause)
         {
             input.UpdateInput();
             // look to target character

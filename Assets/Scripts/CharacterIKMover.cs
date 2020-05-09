@@ -31,28 +31,9 @@ public class CharacterIKMover : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        anim            = GetComponent<Animator>();
-        _character      = GetComponentInParent<Character>();
-
-        CreateObjectsForIKMove();
+        anim        = GetComponent<Animator>();
+        _character  = GetComponentInParent<Character>();
     }
-
-    private void CreateObjectsForIKMove()
-    {
-
-    }
-
-    public void UpdateWeaponHandSpots(Transform leftHandObject, SimpleTransform rightHand)
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
 
 
     void OnAnimatorIK(int layerIndex)

@@ -40,7 +40,9 @@ public class AIMover : ICharacterMover
         agent.baseOffset    = 0.0f;
         agent.height        = 2.5f;
         _path               = new NavMeshPath();
-        agent.CalculatePath(_input.PointToMove, _path);
+
+        if (_input.PointToMove!= Vector3.zero)
+            agent.CalculatePath(_input.PointToMove, _path);
 
         // update nav mesh surface
         GameManager.instance.BakeSurface();

@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: LevelSetting_01
   m_EditorClassIdentifier: 
   enemySettings:
-  - {fileID: 11400000, guid: f6245a0d8c2877b44b429694ecc9d132, type: 2}
+  - {fileID: 11400000, guid: a7d3187ec16293d47ae3a3dcb00f578b, type: 2}
   startMissionsTasks:
   - MISSION_MAIN
-  startMissionsIsSilance: 01
-  playerSpawnPoint: {fileID: 0}
+  startMissionsIsSilance: 00

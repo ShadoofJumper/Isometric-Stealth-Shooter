@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(menuName = "Weapon/Settings", fileName = "Weapon parametrs")]
-public class WeaponSettings : ScriptableObject
+[CreateAssetMenu(menuName = "Inventory/Weapon/Settings", fileName = "Weapon parametrs")]
+public class WeaponSettings : EquipmentSettings
 {
-    [SerializeField] private string weaponName;
+    //weapon type 1 - main, 2 - add, 3 - extra
+    [SerializeField] private WeaponType weaponPlace;
     [SerializeField] private float bulletSpeed;
     [SerializeField] private float fireRate;
     [SerializeField] private float reload;
@@ -14,11 +15,9 @@ public class WeaponSettings : ScriptableObject
     [SerializeField] private int ammoStoreMax;
     // weapon prefab settings
     [SerializeField] private GameObject weaponModel;
-    [Header("Paramms for weapon right hand placement")]
-    [SerializeField] private Vector3 weaponRightHandPos;
-    [SerializeField] private Vector3 weaponRightHandRot;
 
-    public string WeaponName { get { return weaponName; } }
+
+    #region Properties
     public float Speed      { get { return bulletSpeed; }}
     public float FireRate { get { return fireRate; }}
     public float Reload     { get { return reload; } }
@@ -27,9 +26,10 @@ public class WeaponSettings : ScriptableObject
     public int AmmoAmount   { get { return ammoAmount; } }
     public int AmmoStoreMax { get { return ammoStoreMax; } }
     // weapon prefab props
-    public Vector3 RightHandSpotPos { get { return weaponRightHandPos; }}
-    public Vector3 RightHandSpotRot { get { return weaponRightHandRot; }}
     public GameObject WeaponModel { get { return weaponModel; } }
-
+    public int WeaponPlaceNumber { get { return (int)weaponPlace; } }
+    #endregion
 
 }
+
+public enum WeaponType {Main, Second, Extra}
