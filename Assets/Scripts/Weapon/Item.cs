@@ -15,7 +15,7 @@ public class Item : MonoBehaviour
         Debug.Log("Use item!: " + settings.Name);
     }
 
-    public void RemoveItem()
+    public virtual void RemoveItem()
     {
         Debug.Log("RemoveItem");
     }

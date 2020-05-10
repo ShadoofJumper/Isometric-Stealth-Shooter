@@ -1,14 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class WeaponSlot : MonoBehaviour
+public class WeaponSlot : MonoBehaviour, IPointerClickHandler
 {
-    private ItemSettings item;
+    private Weapon item;
     private Image slotPanel;
     [SerializeField] private Image icon;
     [SerializeField] private int slotId;
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button == PointerEventData.InputButton.Left)
+            EquipWeapon();
+        else if (eventData.button == PointerEventData.InputButton.Right)
+            RemoveFromWeapon();
+    }
 
     private void Awake()
     {
@@ -17,7 +26,23 @@ public class WeaponSlot : MonoBehaviour
         //slotPanel.enabled = false;
     }
 
-    public void AddItem(ItemSettings newItem)
+    private void EquipWeapon()
+    {
+        Debug.Log("EquipWeapon");
+        if(item!=null)
+            item.EquipWeapon();
+    }
+
+    private void RemoveFromWeapon()
+    {
+        Debug.Log("RemoveFromWeapon");
+        if (item != null)
+            item.RemoveFromWeapons();
+    }
+
+
+
+    public void AddItem(Weapon newItem)
     {
         item = newItem;
         icon.enabled = true;
@@ -34,7 +59,7 @@ public class WeaponSlot : MonoBehaviour
     public void RemoveWeapon()
     {
         Debug.Log("Drop item on ground!");
-        SceneController.instance.playerInventory.RemoveWeapon(slotId);
+        SceneController.instance.playerInventory.RemoveWeapon(item);
     }
 
     public void SetMainSlot(Color mainColor)

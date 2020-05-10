@@ -21,4 +21,21 @@ public class Weapon : Equipment
         }
     }
 
+    public void RemoveFromWeapons()
+    {
+        if (inventory!=null)
+        {
+            CharacterInventory _inventory = inventory;
+            inventory.RemoveWeapon(this);
+            _inventory.AddItem(this);
+        }
+    }
+
+    public void EquipWeapon()
+    {
+        if (inventory != null)
+        {
+            inventory.SetMainWeapon(WeaponSettings.WeaponPlaceNumber);
+        }
+    }
 }

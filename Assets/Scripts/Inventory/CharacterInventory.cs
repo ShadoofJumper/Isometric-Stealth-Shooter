@@ -13,7 +13,7 @@ public class CharacterInventory : MonoBehaviour
 
     public delegate void OnModifyInventory();
     public OnModifyInventory    onModifyInventory;
-    private int                 currentMainWeapon = 2;
+    private int                 currentMainWeapon = 99;
     private CharacterEquipment  characterEquipment;
 
     public int CurrentMainWeapon                    => currentMainWeapon;
@@ -47,12 +47,12 @@ public class CharacterInventory : MonoBehaviour
 
     public bool AddItem(Item item)
     {
-        if (CheckCanPutItemInWeapon(item))
-        {
-            AddWeapon(item as Weapon);
-            item.Inventory = this;
-            return true;
-        }
+        //if (CheckCanPutItemInWeapon(item))
+        //{
+        //    AddWeapon(item as Weapon);
+        //    item.Inventory = this;
+        //    return true;
+        //}
 
         if (items.Count < itemsMaxNumber)
         {
@@ -89,10 +89,11 @@ public class CharacterInventory : MonoBehaviour
             onModifyInventory.Invoke();
     }
 
-    public void RemoveWeapon(int weaponPlaceNumber)
+    public void RemoveWeapon(Weapon weapon)
     {
+        int weaponPlaceNumber = weapon.WeaponSettings.WeaponPlaceNumber;
         //set second 
-        weapons[weaponPlaceNumber].Inventory = null;
+        weapon.Inventory = null;
         weapons[weaponPlaceNumber] = null;
         UpdateMainWeapon();
         if (onModifyInventory != null)
@@ -117,7 +118,8 @@ public class CharacterInventory : MonoBehaviour
     //set as main weapon weapos with bigger priority, (min number -> bigger priority)
     private void UpdateMainWeapon()
     {
-        int mainWeaponNumber = 2;
+        Debug.Log("UpdateMainWeapon");
+        int mainWeaponNumber = 99;
         for (int i = 0; i < weapons.Length; i++)
         {
             if (weapons[i] != null)
@@ -128,12 +130,23 @@ public class CharacterInventory : MonoBehaviour
             }
  
         }
-        if(mainWeaponNumber!=currentMainWeapon)
+        if (mainWeaponNumber != currentMainWeapon)
+        {
             SetMainWeapon(mainWeaponNumber);
+        }
     }
 
-    private void SetMainWeapon(int fromSlot)
+    public void SetMainWeapon(int fromSlot)
     {
+        Debug.Log("SetMainWeapon: "+ fromSlot);
+        if (fromSlot == 99)
+        {
+            currentMainWeapon = fromSlot;
+            if (onModifyInventory != null)
+                onModifyInventory.Invoke();
+            return;
+        }
+
         if (weapons[fromSlot] != null)
         {
             currentMainWeapon = fromSlot;
@@ -164,7 +177,7 @@ public class CharacterInventory : MonoBehaviour
         //TO DO
 
         //drop weapon in main slot
-        RemoveWeapon(currentMainWeapon);
+        RemoveWeapon(weapons[currentMainWeapon]);
         //check in inventory the same type of weapon and add if have
         Item weaponFromInventory = FindWeaponReplacement(currentWeaponType);
         if (weaponFromInventory!=null)

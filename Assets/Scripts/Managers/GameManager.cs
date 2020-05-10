@@ -142,7 +142,6 @@ public class GameManager : MonoBehaviour
         //SceneController.instance.playerInventory.AddWeapon(weaponSecond);
         //SceneController.instance.playerInventory.AddWeapon(weaponExtra);
         SceneController.instance.playerInventory.AddItem(weaponMain);
-        Debug.Log($"Weapon test: {weaponMain.WeaponSettings.Name}");
     }
 
     public void RestartLevel()

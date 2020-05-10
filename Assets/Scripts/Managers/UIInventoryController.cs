@@ -9,6 +9,7 @@ public class UIInventoryController : MonoBehaviour
     [SerializeField] private GameObject uiInventory;
 
     private CharacterInventory characterInventory;
+
     private InventorySlot[] inventorySlots;
     private WeaponSlot[] weaponSlots;
     private bool isShowInventory = true;
@@ -19,8 +20,10 @@ public class UIInventoryController : MonoBehaviour
     {
         Debug.Log("Awake ui inventory!");
         characterInventory = SceneController.instance.playerInventory;
+
         characterInventory.onModifyInventory += UpdateUIInventory;
         characterInventory.onModifyInventory += UpdateUIMainWeapon;
+
         inventorySlots = inventorySlotParent.GetComponentsInChildren<InventorySlot>();
         weaponSlots = weaponSlotParent.GetComponentsInChildren<WeaponSlot>();
     }
@@ -38,6 +41,7 @@ public class UIInventoryController : MonoBehaviour
 
     public void UpdateUIMainWeapon()
     {
+        Debug.Log("UpdateUIMainWeapon: " + SceneController.instance.playerInventory.CurrentMainWeapon);
         //update weapon
         for (int j = 0; j < weaponSlots.Length; j++)
         {
@@ -78,7 +82,7 @@ public class UIInventoryController : MonoBehaviour
         {
             if (characterInventory.weapons[j]!=null)
             {
-                ItemSettings item = characterInventory.weapons[j].WeaponSettings;
+                Weapon item = characterInventory.weapons[j];
                 weaponSlots[j].AddItem(item);
             }
             else

@@ -35,8 +35,17 @@ public class CharacterEquipment : MonoBehaviour
     public void Equip(Equipment equipment)
     {
         int equipmentId = (int)equipment.EquipSettings.EquipType;
+        if (equipment == currentEquipment[equipmentId])
+        {
+            Debug.Log("Put the same equip!");
+            return;
+        }
         //unequip old item
         Equipment oldEquipment = Unequip(equipmentId);
+        if(oldEquipment!=null)
+            Debug.Log("old equip: " + oldEquipment.ItemSettings.Name);
+        Debug.Log("new equip: " + equipment.ItemSettings.Name);
+
         //must be after unequip
         currentEquipment[equipmentId] = equipment;
         if (onEquipmentChanged != null)
@@ -45,10 +54,10 @@ public class CharacterEquipment : MonoBehaviour
 
     private bool CheckIsEquipmentWeapon(int slotId)
     {
-        WeaponSettings weaponSettings = currentEquipment[slotId].EquipSettings as WeaponSettings;
-        return weaponSettings != null ? true : false;
+        return slotId == (int)EquipmentType.Weapon;
     }
 
+    //isSwaped mean this equip is swapped by other
     public Equipment Unequip(int slotId)
     {
         if (currentEquipment[slotId] !=null)
@@ -71,6 +80,8 @@ public class CharacterEquipment : MonoBehaviour
         for (int i = 0; i < currentEquipment.Length; i++)
         {
             Unequip(i);
+            if(CheckIsEquipmentWeapon(i))
+                inventory.SetMainWeapon(99);
         }
     }
 

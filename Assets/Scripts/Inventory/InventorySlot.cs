@@ -19,7 +19,6 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
 
     public void AddItem(Item newItem)
     {
-        Debug.Log($"AddItem: {newItem.ItemSettings.Name}");
         item = newItem;
         icon.sprite = newItem.ItemSettings.Icon;
         icon.enabled = true;
