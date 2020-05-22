@@ -12,7 +12,6 @@ public class Weapon : Equipment
 
     public override void Use()
     {
-        Debug.Log("Use weapon! "+ WeaponSettings.Name);
         if (inventory != null)
         {
             CharacterInventory _inventory = inventory;
@@ -33,8 +32,10 @@ public class Weapon : Equipment
 
     public void EquipWeapon()
     {
+        Debug.Log("Weapon. EquipWeapon");
         if (inventory != null)
         {
+            Debug.Log("Weapon. SetMainWeapon");
             inventory.SetMainWeapon(WeaponSettings.WeaponPlaceNumber);
         }
     }

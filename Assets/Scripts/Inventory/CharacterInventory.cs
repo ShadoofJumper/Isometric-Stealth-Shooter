@@ -47,6 +47,7 @@ public class CharacterInventory : MonoBehaviour
 
     public bool AddItem(Item item)
     {
+        Debug.Log("AddItem: "+item.ItemSettings.Name);
         //if (CheckCanPutItemInWeapon(item))
         //{
         //    AddWeapon(item as Weapon);
@@ -67,6 +68,7 @@ public class CharacterInventory : MonoBehaviour
 
     public void RemoveItem(Item item)
     {
+        Debug.Log("RemoveItem: "+ item.ItemSettings.Name);
         item.Inventory = null;
         items.Remove(item);
         if (onModifyInventory != null)
@@ -75,6 +77,7 @@ public class CharacterInventory : MonoBehaviour
 
     public void AddWeapon(Weapon weapon)
     {
+        Debug.Log("AddWeapon: "+ weapon.WeaponSettings.Name);
         weapon.Inventory = this;
         int weaponPlaceNumber = weapon.WeaponSettings.WeaponPlaceNumber;
         Weapon oldWeapon = null;
@@ -91,6 +94,7 @@ public class CharacterInventory : MonoBehaviour
 
     public void RemoveWeapon(Weapon weapon)
     {
+        Debug.Log("RemoveWeapon: "+weapon.ItemSettings.Name);
         int weaponPlaceNumber = weapon.WeaponSettings.WeaponPlaceNumber;
         //set second 
         weapon.Inventory = null;
@@ -118,7 +122,6 @@ public class CharacterInventory : MonoBehaviour
     //set as main weapon weapos with bigger priority, (min number -> bigger priority)
     private void UpdateMainWeapon()
     {
-        Debug.Log("UpdateMainWeapon");
         int mainWeaponNumber = 99;
         for (int i = 0; i < weapons.Length; i++)
         {
@@ -138,7 +141,6 @@ public class CharacterInventory : MonoBehaviour
 
     public void SetMainWeapon(int fromSlot)
     {
-        Debug.Log("SetMainWeapon: "+ fromSlot);
         if (fromSlot == 99)
         {
             currentMainWeapon = fromSlot;
@@ -173,17 +175,18 @@ public class CharacterInventory : MonoBehaviour
 
     private void DropWeapon()
     {
+        Debug.Log("DropWeapon!");
         int currentWeaponType = weapons[currentMainWeapon].WeaponSettings.WeaponPlaceNumber;
         //TO DO
 
         //drop weapon in main slot
         RemoveWeapon(weapons[currentMainWeapon]);
+        //HERE AUTO TAKE ITEM FROM INVENTORY
         //check in inventory the same type of weapon and add if have
         Item weaponFromInventory = FindWeaponReplacement(currentWeaponType);
         if (weaponFromInventory!=null)
         {
-            AddWeapon(weaponFromInventory as Weapon);
-            RemoveItem(weaponFromInventory);
+            weaponFromInventory.Use();
         }
     }
 }

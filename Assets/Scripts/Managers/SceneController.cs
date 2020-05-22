@@ -11,7 +11,6 @@ public class SceneController : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("Awake SceneController");
         if (instance == null)
         {
             instance = this;

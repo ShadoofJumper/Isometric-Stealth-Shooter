@@ -18,7 +18,6 @@ public class UIInventoryController : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("Awake ui inventory!");
         characterInventory = SceneController.instance.playerInventory;
 
         characterInventory.onModifyInventory += UpdateUIInventory;
@@ -41,7 +40,6 @@ public class UIInventoryController : MonoBehaviour
 
     public void UpdateUIMainWeapon()
     {
-        Debug.Log("UpdateUIMainWeapon: " + SceneController.instance.playerInventory.CurrentMainWeapon);
         //update weapon
         for (int j = 0; j < weaponSlots.Length; j++)
         {
