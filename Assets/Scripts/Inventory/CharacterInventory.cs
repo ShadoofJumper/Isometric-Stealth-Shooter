@@ -47,7 +47,7 @@ public class CharacterInventory : MonoBehaviour
 
     public bool AddItem(Item item)
     {
-        Debug.Log("AddItem: "+item.ItemSettings.Name);
+       // Debug.Log("AddItem: "+item.ItemSettings.Name);
         //if (CheckCanPutItemInWeapon(item))
         //{
         //    AddWeapon(item as Weapon);
@@ -68,7 +68,7 @@ public class CharacterInventory : MonoBehaviour
 
     public void RemoveItem(Item item)
     {
-        Debug.Log("RemoveItem: "+ item.ItemSettings.Name);
+        //Debug.Log("RemoveItem: "+ item.ItemSettings.Name);
         item.Inventory = null;
         items.Remove(item);
         if (onModifyInventory != null)
@@ -77,7 +77,7 @@ public class CharacterInventory : MonoBehaviour
 
     public void AddWeapon(Weapon weapon)
     {
-        Debug.Log("AddWeapon: "+ weapon.WeaponSettings.Name);
+        //Debug.Log("AddWeapon: "+ weapon.WeaponSettings.Name);
         weapon.Inventory = this;
         int weaponPlaceNumber = weapon.WeaponSettings.WeaponPlaceNumber;
         Weapon oldWeapon = null;
@@ -94,7 +94,7 @@ public class CharacterInventory : MonoBehaviour
 
     public void RemoveWeapon(Weapon weapon)
     {
-        Debug.Log("RemoveWeapon: "+weapon.ItemSettings.Name);
+        // Debug.Log("RemoveWeapon: "+weapon.ItemSettings.Name);
         int weaponPlaceNumber = weapon.WeaponSettings.WeaponPlaceNumber;
         //set second 
         weapon.Inventory = null;
@@ -175,7 +175,7 @@ public class CharacterInventory : MonoBehaviour
 
     private void DropWeapon()
     {
-        Debug.Log("DropWeapon!");
+        //Debug.Log("DropWeapon!");
         int currentWeaponType = weapons[currentMainWeapon].WeaponSettings.WeaponPlaceNumber;
         //TO DO
 

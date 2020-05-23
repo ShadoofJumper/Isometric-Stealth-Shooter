@@ -8,6 +8,7 @@ public class CharacterCombat
     private float           _health;
     private int             dieImpulsePower = 200;
     private float           dieFallDelay    = 1.0f;
+    private Weapon          _weapon;
     private WeaponShooter   _weaponShooter;
     private Character       _character;
     private NavMeshAgent    _agent;
@@ -39,19 +40,15 @@ public class CharacterCombat
         if (_character.isPlayer)
         {
             UIController.instance.UpdateHealthUI(_health);
-
-            if (_weaponShooter != null)
-            {
-                // test
-                UIController.instance.UpdateAmmoUI(_weaponShooter.CurrentAmmoInStore, _weaponShooter.CurrentAmmoAmmount);
-            }
         }
 
     }
 
-    public void UpdateCharacterStatus(WeaponShooter weaponShooter)
+    public void SetCombatWeapon(Weapon weapon)
     {
-        _weaponShooter = weaponShooter;
+        _weapon         = weapon;
+        _weaponShooter  = weapon.WeaponShooter;
+        UIController.instance.UpdateAmmoUI(_weaponShooter.CurrentAmmoInStore, _weaponShooter.CurrentAmmoAmmount);
     }
 
     public void TakeDamage(float damage, ContactPoint hitPoint = new ContactPoint(), Vector3 hitDirection = new Vector3())
@@ -63,7 +60,6 @@ public class CharacterCombat
 
         if (_character.isPlayer)
         {
-            //Debug.Log($"Health: {_health}/{damage}");
             UIController.instance.UpdateHealthUI(_health);
         }
     }
@@ -80,7 +76,7 @@ public class CharacterCombat
 
         if (leftButton.press && (isShootMain || isShootExtra))
         {
-            _weaponShooter.LeftButtonHold();
+            _weaponShooter.Shoot();
             if (_character.isPlayer)
                 UIController.instance.UpdateAmmoUI(_weaponShooter.CurrentAmmoInStore, _weaponShooter.CurrentAmmoAmmount);
             if (_weaponShooter.IsStoreEmpty && _weaponShooter.CurrentAmmoAmmount > 0)
@@ -95,19 +91,19 @@ public class CharacterCombat
 
         if (rightButton.down)
         {
-            _charAnim.EnableAim(weaponGetSpeed, delegate { _weaponShooter.RightButtonDown(); isShootExtra = true; });
+            _charAnim.EnableAim(weaponGetSpeed, delegate { _weaponShooter.TurnOnLazer(); isShootExtra = true; });
         }
 
         if (rightButton.up)
         {
             _charAnim.DisableAim(weaponGetSpeed);
-            _weaponShooter.RightButtonUp();
+            _weaponShooter.TurnOffLazer();
             isShootExtra = false;
         }
 
         if (rightButton.press && isShootExtra)
         {
-            _weaponShooter.RightButtonHold();
+            _weaponShooter.ShootExtra();
         }
     }
 

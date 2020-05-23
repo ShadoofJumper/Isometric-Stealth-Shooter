@@ -28,22 +28,22 @@ public class WeaponSlot : MonoBehaviour, IPointerClickHandler
 
     private void EquipWeapon()
     {
-        Debug.Log("EquipWeapon");
+        //Debug.Log("EquipWeapon");
         if (item != null)
         {
-            Debug.Log("norrm!");
+            //Debug.Log("norrm!");
             item.EquipWeapon();
 
         }
         else
         {
-            Debug.Log("Bug!");
+            //Debug.Log("Bug!");
         }
     }
 
     private void RemoveFromWeapon()
     {
-        Debug.Log("RemoveFromWeapon");
+        //Debug.Log("RemoveFromWeapon");
         if (item != null)
             item.RemoveFromWeapons();
     }

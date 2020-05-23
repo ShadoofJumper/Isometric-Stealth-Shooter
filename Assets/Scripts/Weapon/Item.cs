@@ -10,6 +10,11 @@ public class Item : MonoBehaviour
     public ItemSettings ItemSettings => settings;
     public CharacterInventory Inventory { get { return inventory; } set { inventory = value; } }
 
+    private void Start()
+    {
+        Debug.Log("Item start: " + settings.Name);
+    }
+
     public virtual void Use()
     {
         Debug.Log("Use item!: " + settings.Name);

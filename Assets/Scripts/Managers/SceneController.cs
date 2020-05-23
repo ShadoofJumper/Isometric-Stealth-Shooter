@@ -38,11 +38,13 @@ public class SceneController : MonoBehaviour
     public Dictionary<Transform, LevelCamera> camerasOnScene = new Dictionary<Transform, LevelCamera>();
     [SerializeField] private GameObject doorsParent;
     [SerializeField] private GameObject targetFolder;
+    [SerializeField] private Transform interactableParent;
 
     // propertys
     public List<CharacterSettings> EnemySettings    { get { return enemySettings; }         set { enemySettings         = value; } }
     public Transform StartPositionPlayer            { get { return startPositionPlayer; }   set { startPositionPlayer   = value; } }
-    public GameObject DoorsParent                    { get { return doorsParent; }           set { doorsParent           = value; } }
+    public GameObject DoorsParent                   { get { return doorsParent; }           set { doorsParent           = value; } }
+    public Transform InteractableParent            { get { return interactableParent; }    set { interactableParent    = value; } }
 
 
     public void SpawnAllEnemys()

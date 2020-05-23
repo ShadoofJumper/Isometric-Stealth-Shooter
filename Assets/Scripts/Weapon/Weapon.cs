@@ -10,6 +10,16 @@ public class Weapon : Equipment
     public WeaponSettings WeaponSettings => settings as WeaponSettings;
     #endregion
 
+    private void Start()
+    {
+        Debug.Log("Weapon start: " + settings.Name);
+    }
+
+    public void CreateWeaponOnScene()
+    {
+        Debug.Log("Create: "+ settings.Name);
+    }
+
     public override void Use()
     {
         if (inventory != null)
@@ -22,6 +32,7 @@ public class Weapon : Equipment
 
     public void RemoveFromWeapons()
     {
+        Debug.Log("RemoveFromWeapons: " + settings.Name);
         if (inventory!=null)
         {
             CharacterInventory _inventory = inventory;

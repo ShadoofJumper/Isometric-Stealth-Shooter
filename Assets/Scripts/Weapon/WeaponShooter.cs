@@ -42,27 +42,27 @@ public class WeaponShooter : MonoBehaviour
     ICharacterInput inputChar;
 
 
-    public void WeaponShooterSetup(Character weaponChar, WeaponSettings weaponSettings, Transform shootSpot)
-    {
-        this.weaponChar = weaponChar;
-        this.inputChar  = weaponChar.CharacterInput;
-        this.shootSpot = shootSpot;
-        this.settings = weaponSettings;
+    //public void WeaponShooterSetup(Character weaponChar, WeaponSettings weaponSettings)
+    //{
+    //    this.weaponChar = weaponChar;
+    //    this.inputChar  = weaponChar.CharacterInput;
+    //    this.settings   = weaponSettings;
 
-        ammoStoreMax        = settings.AmmoStoreMax;
-        ammoAmountInStore   = settings.AmmoAmountInStore;
-        ammoAmount          = settings.AmmoAmount;
-        //set default
-        shootSpot = transform;
-        isStoreEmpty = ammoAmountInStore == 0;
-    }
+    //    ammoStoreMax        = settings.AmmoStoreMax;
+    //    ammoAmountInStore   = settings.AmmoAmountInStore;
+    //    ammoAmount          = settings.AmmoAmount;
+    //    //set default
+    //    shootSpot = transform;
+    //    isStoreEmpty = ammoAmountInStore == 0;
+    //}
 
 
     void Start()
     {
+        settings = GetComponentInParent<Weapon>().WeaponSettings;
         // create empty object for future bullets
-        bulletParent = new GameObject();
-        bulletParent.name = "Bullets weapon:" + gameObject.name;
+        bulletParent        = new GameObject();
+        bulletParent.name   = "Bullets weapon:" + gameObject.name;
 
         if (laserLineRender != null)
         {
@@ -70,6 +70,8 @@ public class WeaponShooter : MonoBehaviour
             laserLineRender.startWidth = laserWidth;
             laserLineRender.endWidth = laserWidth;
         }
+
+        Debug.Log("Weapon shooter: " + settings.Name);
     }
 
 
@@ -125,7 +127,7 @@ public class WeaponShooter : MonoBehaviour
         }
     }
 
-    private void Shoot()
+    private void CreateBullets()
     {
         // create or take from pull
         Bullet bullet = bulletPool.Count != 0 ? GetBullet() : CreateBullet();
@@ -136,27 +138,21 @@ public class WeaponShooter : MonoBehaviour
     // --------------------- end shoot logic -----------------
 
     // --------------------- Inputs ---------------------
-    public virtual void RightButtonDown()
+    public virtual void TurnOnLazer()
     {
         // turn on laser
-        laserLineRender.enabled = true;
-        laserLineRender.positionCount = 0;
-
+        laserLineRender.enabled         = true;
+        laserLineRender.positionCount   = 0;
     }
 
-    public virtual void RightButtonUp()
+    public virtual void TurnOffLazer()
     {
         // turn on laser
         laserLineRender.enabled = false;
     }
 
-    public virtual void RightButtonHold()
-    {
-        // turn on laser
-        ShootExtra();
-    }
 
-    public virtual void LeftButtonHold()
+    public virtual void Shoot()
     {
         // check if time to shoot
         if (Time.time >= timeToFire)
@@ -165,7 +161,7 @@ public class WeaponShooter : MonoBehaviour
             if (ammoAmountInStore > 0)
             {
                 ammoAmountInStore -= 1;
-                Shoot();
+                CreateBullets();
             }
             else
             {

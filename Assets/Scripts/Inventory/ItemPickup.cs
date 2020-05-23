@@ -2,9 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Item))]
 public class ItemPickup : Interactable
 {
-    [SerializeField] private Item item;
+    private Item item;
+    //create item object on scene
+    //item = Instantiate(itemPrefab, Vector3.zero, Quaternion.identity, SceneController.instance.InteractableParent);
+
+    private void Start()
+    {
+        item = GetComponent<Item>();
+    }
 
     public override bool Interact()
     {
@@ -13,7 +21,6 @@ public class ItemPickup : Interactable
 
     private bool Pickup()
     {
-        Debug.Log("We get item: " + item.ItemSettings.Name);
         bool isAdd = SceneController.instance.playerInventory.AddItem(item);
         if(isAdd)
             Destroy(gameObject);

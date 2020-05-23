@@ -37,14 +37,13 @@ public class CharacterEquipment : MonoBehaviour
         int equipmentId = (int)equipment.EquipSettings.EquipType;
         if (equipment == currentEquipment[equipmentId])
         {
-            Debug.Log("Put the same equip!");
             return;
         }
         //unequip old item
         Equipment oldEquipment = Unequip(equipmentId);
-        if(oldEquipment!=null)
-            Debug.Log("old equip: " + oldEquipment.ItemSettings.Name);
-        Debug.Log("new equip: " + equipment.ItemSettings.Name);
+        //if(oldEquipment!=null)
+        //    Debug.Log("old equip: " + oldEquipment.ItemSettings.Name);
+        //Debug.Log("new equip: " + equipment.ItemSettings.Name);
 
         //must be after unequip
         currentEquipment[equipmentId] = equipment;
